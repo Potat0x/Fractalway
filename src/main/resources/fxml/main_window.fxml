@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="467.0" prefWidth="575.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainWindowController">
+   <children>
+      <Label layoutX="132.0" layoutY="88.0" text="test" />
+      <Canvas fx:id="canvas" height="555.0" layoutX="10.0" layoutY="8.0" onMouseClicked="#cudaPaint" width="555.0" />
+   </children>
+</AnchorPane>
