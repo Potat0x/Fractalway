@@ -1,16 +1,29 @@
 package app;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class MainWindowController {
-    private final static int CANVAS_WIDTH = 555;
+    private final int CANVAS_WIDTH = 512;
     private final int[] red;
     private final int[] green;
     private final int[] blue;
+
     private final PatternPainter patternPainter;
+    private final CudaPainter painter;
+
+    private int maxIter = 250;
+
+    private double zoom = 0.0054;
+    private double zoomStep = 1.7;
+
+    private double posX = -0.0015;
+    private double posY = 0;
+    private double moveStep = 0.07;
 
     @FXML
     Canvas canvas;
@@ -21,6 +34,7 @@ public class MainWindowController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
+        painter = new CudaPainter(CANVAS_WIDTH, "/kernels/mandelbrotSet.ptx", "mandelbrotSet");
     }
 
     @FXML
@@ -31,11 +45,10 @@ public class MainWindowController {
         paintImageOnCanvas();
     }
 
-    public void cudaPaint() {
-        CudaPainter painter = new CudaPainter(CANVAS_WIDTH, "/kernels/gradient.ptx", "gradient");
+    private void cudaPaint() {
         long cudaStart = System.currentTimeMillis();
-        painter.paint(red, green, blue);
-        System.out.println("cudaPaint: " + (System.currentTimeMillis() - cudaStart) + "ms");
+        painter.paint(red, green, blue, zoom, posX, posY, maxIter);
+        System.out.println("cudaPaint (" + (System.currentTimeMillis() - cudaStart) + "ms): zoom = " + zoom + "; posX = " + posX + "; posY = " + posY + ";");
         long paintStart = System.currentTimeMillis();
         paintImageOnCanvas();
         System.out.println("paintImageOnCanvas: " + (System.currentTimeMillis() - paintStart) + "ms");
@@ -68,5 +81,40 @@ public class MainWindowController {
 
     private int calculateIndex(int x, int y) {
         return CANVAS_WIDTH * y + x;
+    }
+
+    public void areaStop(MouseEvent mouseEvent) {
+        System.out.println("areaStop: " + mouseEvent.getX() + ", " + mouseEvent.getY());
+        cudaPaint();
+    }
+
+    public void moveDown(ActionEvent actionEvent) {
+        posY -= moveStep * zoom;
+        cudaPaint();
+    }
+
+    public void moveUp(ActionEvent actionEvent) {
+        posY += moveStep * zoom;
+        cudaPaint();
+    }
+
+    public void moveLeft(ActionEvent actionEvent) {
+        posX -= moveStep * zoom;
+        cudaPaint();
+    }
+
+    public void moveRight(ActionEvent actionEvent) {
+        posX += moveStep * zoom;
+        cudaPaint();
+    }
+
+    public void zoomUp(ActionEvent actionEvent) {
+        zoom *= zoomStep;
+        cudaPaint();
+    }
+
+    public void zoomDown(ActionEvent actionEvent) {
+        zoom /= zoomStep;
+        cudaPaint();
     }
 }

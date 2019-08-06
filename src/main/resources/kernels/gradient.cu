@@ -1,7 +1,7 @@
 extern "C"
-__global__ void gradient(int* r, int* g, int* b)
+__global__ void gradient(double zoom, double startX, double startY, int maxIter, int* r, int* g, int* b)
 {
-    const int wh = 555;
+    const int wh = 512;
 
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int x = blockIdx.x * blockDim.x + threadIdx.x;

@@ -15,6 +15,10 @@ class CudaPainter {
     private final String ptxFileName;
     private final String functionName;
     private final int threadsPerBlock;
+    private CUdeviceptr deviceOutputR;
+    private CUdeviceptr deviceOutputG;
+    private CUdeviceptr deviceOutputB;
+    private CUfunction function;
 
     CudaPainter(int imageWidth, String kernelFilename, String functionName) {
         this.imageWidth = imageWidth;
@@ -22,33 +26,16 @@ class CudaPainter {
         this.functionName = functionName;
         arraySizeInBytes = imageWidth * imageWidth * Sizeof.INT;
         threadsPerBlock = 32;
+        prepareCuda();
     }
 
-    void paint(int[] red, int[] green, int[] blue) {
-        JCudaDriver.setExceptionsEnabled(true);
-        cuInit(0);
-        CUdevice device = new CUdevice();
-        cuDeviceGet(device, 0);
-        CUcontext context = new CUcontext();
-        cuCtxCreate(context, 0, device);
-
-        CUmodule module = new CUmodule();
-        cuModuleLoad(module, ptxFileName);
-
-        CUfunction function = new CUfunction();
-        cuModuleGetFunction(function, module, functionName);
-
-        CUdeviceptr deviceOutputR = new CUdeviceptr();
-
-        cuMemAlloc(deviceOutputR, arraySizeInBytes);
-
-        CUdeviceptr deviceOutputG = new CUdeviceptr();
-        cuMemAlloc(deviceOutputG, arraySizeInBytes);
-
-        CUdeviceptr deviceOutputB = new CUdeviceptr();
-        cuMemAlloc(deviceOutputB, arraySizeInBytes);
+    void paint(int[] red, int[] green, int[] blue, double zoom, double posX, double posY, int maxIter) {
 
         Pointer kernelParameters = Pointer.to(
+                Pointer.to(new double[]{zoom}),
+                Pointer.to(new double[]{posX}),
+                Pointer.to(new double[]{posY}),
+                Pointer.to(new int[]{maxIter}),
                 Pointer.to(deviceOutputR),
                 Pointer.to(deviceOutputG),
                 Pointer.to(deviceOutputB)
@@ -58,14 +45,7 @@ class CudaPainter {
         int blocksPerGrid = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
         dim3 dimGrid = new dim3(blocksPerGrid, blocksPerGrid, 1);
 
-//        threadsPerBlock = 32*N
-//        dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
-//        dim3 dimGrid = new dim3(imageWidth / dimBlock.x, imageWidth / dimBlock.y, 1);
-
-        System.out.println("block " + dimBlock);
-        System.out.println("grid  " + dimGrid);
-
-        System.out.println("a--> " + red[10 * 255 + 120]);
+        System.out.println("block " + dimBlock + "\ngrid  " + dimGrid);
 
         cuLaunchKernel(function,
                 dimGrid.x, dimGrid.y, dimGrid.z,
@@ -75,17 +55,44 @@ class CudaPainter {
 
         cuCtxSynchronize();
 
-        System.out.println("b--> " + red[10 * 255 + 120]);
         cuMemcpyDtoH(Pointer.to(red), deviceOutputR, arraySizeInBytes);
         cuMemcpyDtoH(Pointer.to(green), deviceOutputG, arraySizeInBytes);
         cuMemcpyDtoH(Pointer.to(blue), deviceOutputB, arraySizeInBytes);
-        System.out.println("c--> " + red[10 * 255 + 120]);
-        memFree(deviceOutputR, deviceOutputG, deviceOutputB);
+    }
+
+    private void prepareCuda() {
+        JCudaDriver.setExceptionsEnabled(true);
+        cuInit(0);
+
+        CUdevice device = new CUdevice();
+        cuDeviceGet(device, 0);
+
+        CUcontext context = new CUcontext();
+        cuCtxCreate(context, 0, device);
+
+        CUmodule module = new CUmodule();
+        cuModuleLoad(module, ptxFileName);
+
+        function = new CUfunction();
+        cuModuleGetFunction(function, module, functionName);
+
+        deviceOutputR = new CUdeviceptr();
+        cuMemAlloc(deviceOutputR, arraySizeInBytes);
+        deviceOutputG = new CUdeviceptr();
+        cuMemAlloc(deviceOutputG, arraySizeInBytes);
+        deviceOutputB = new CUdeviceptr();
+        cuMemAlloc(deviceOutputB, arraySizeInBytes);
     }
 
     private void memFree(CUdeviceptr... devicePtr) {
         for (CUdeviceptr devptr : devicePtr) {
             cuMemFree(devptr);
         }
+    }
+
+    @Override //todo: finalize is deprecated since Java 9
+    protected void finalize() throws Throwable {
+        memFree(deviceOutputR, deviceOutputG, deviceOutputB);
+        super.finalize();
     }
 }
