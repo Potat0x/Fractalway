@@ -1,11 +1,16 @@
 package app;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+
+import java.awt.*;
 
 public class MainWindowController {
     private final int CANVAS_WIDTH = 512;
@@ -19,7 +24,7 @@ public class MainWindowController {
     private int maxIter = 250;
 
     private double zoom = 0.0055;
-    private double zoomStep = 1.5;
+    private double zoomStep = 1.2;
     private double posX = 0;
     private double posY = 0;
     private double moveStep = 32;
@@ -40,6 +45,7 @@ public class MainWindowController {
     public void initialize() {
         canvas.setHeight(CANVAS_WIDTH);
         canvas.setWidth(CANVAS_WIDTH);
+        canvas.setFocusTraversable(true);
         loadPattern();
 //        paintImageOnCanvas();
         cudaPaint();
@@ -83,48 +89,65 @@ public class MainWindowController {
         return CANVAS_WIDTH * y + x;
     }
 
-    public void areaStop(MouseEvent mouseEvent) {
-        System.out.println("areaStop: " + mouseEvent.getX() + ", " + mouseEvent.getY());
+    public void updateFractalPosition(MouseEvent mouseEvent) {
+        moveClickedFractalPointToCanvasCenter(mouseEvent.getX(), mouseEvent.getY());
+        cudaPaint();
+        if (mouseEvent.isControlDown()) {
+            moveMouseToCanvasCenter();
+        }
+    }
+
+    public void updateFractalZoom(ScrollEvent scrollEvent) {
+        if (scrollEvent.isControlDown()) {
+            moveMouseToCanvasCenter();
+            moveClickedFractalPointToCanvasCenter(scrollEvent.getX(), scrollEvent.getY());
+        }
+
+        if (scrollEvent.getDeltaY() > 0) {
+            zoom /= zoomStep;
+        } else {
+            zoom *= zoomStep;
+        }
+
         cudaPaint();
     }
 
-    public void moveDown(ActionEvent actionEvent) {
-        posY -= moveStep * zoom;
+    public void handleKeyPressed(KeyEvent keyEvent) {
+        //todo: vavr pattern matching
+        KeyCode key = keyEvent.getCode();
+        if (key == KeyCode.LEFT) {
+            posX -= moveStep * zoom;
+        } else if (key == KeyCode.RIGHT) {
+            posX += moveStep * zoom;
+        } else if (key == KeyCode.UP) {
+            posY -= moveStep * zoom;
+        } else if (key == KeyCode.DOWN) {
+            posY += moveStep * zoom;
+        } else if (key == KeyCode.A) {
+            zoom *= zoomStep;
+        } else if (key == KeyCode.D) {
+            zoom /= zoomStep;
+        }
         cudaPaint();
     }
 
-    public void moveUp(ActionEvent actionEvent) {
-        posY += moveStep * zoom;
-        cudaPaint();
-    }
-
-    public void moveLeft(ActionEvent actionEvent) {
-        posX -= moveStep * zoom;
-        cudaPaint();
-    }
-
-    public void moveRight(ActionEvent actionEvent) {
-        posX += moveStep * zoom;
-        cudaPaint();
-    }
-
-    public void decreaseZoom(ActionEvent actionEvent) {
-        System.out.println("decreaseZoom");
-        zoom *= zoomStep;
-        cudaPaint();
-    }
-
-    public void increaseZoom(ActionEvent actionEvent) {
-        System.out.println("increaseZoom");
-        zoom /= zoomStep;
-        cudaPaint();
-    }
-
-    public void setPosition(MouseEvent mouseEvent) {
-        double diffCenterX = CANVAS_WIDTH / 2.0 - mouseEvent.getX();
-        double diffCenterY = CANVAS_WIDTH / 2.0 - mouseEvent.getY();
+    private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
+        double diffCenterX = CANVAS_WIDTH / 2.0 - eventX;
+        double diffCenterY = CANVAS_WIDTH / 2.0 - eventY;
         posX -= diffCenterX * zoom;
         posY -= diffCenterY * zoom;
-        cudaPaint();
+    }
+
+    private void moveMouseToCanvasCenter() {
+        Point2D point2D = canvas.localToScreen(CANVAS_WIDTH / 2.0, CANVAS_WIDTH / 2.0);
+        setMousePos(Math.round(point2D.getX()), Math.round(point2D.getY()));
+    }
+
+    private void setMousePos(long x, long y) {
+        try {
+            new Robot().mouseMove((int) x, (int) y);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
     }
 }
