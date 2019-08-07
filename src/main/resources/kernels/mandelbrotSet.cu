@@ -16,8 +16,8 @@ __global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter
     double zNextRe = 0;
     double zNextIm = 0;
 
-    double pRe = (x - wh/2.0)*zoom+posX*wh;
-    double pIm = (y - wh/2.0)*zoom+posY*wh;
+    double pRe = (x - wh/2.0)*zoom+posX;
+    double pIm = (y - wh/2.0)*zoom+posY;
 
     int i = 0;
     while(i++ < maxIter)

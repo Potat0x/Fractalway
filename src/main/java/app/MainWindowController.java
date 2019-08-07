@@ -18,12 +18,11 @@ public class MainWindowController {
 
     private int maxIter = 250;
 
-    private double zoom = 0.0054;
-    private double zoomStep = 1.7;
-
-    private double posX = -0.0015;
+    private double zoom = 0.0055;
+    private double zoomStep = 1.5;
+    private double posX = 0;
     private double posY = 0;
-    private double moveStep = 0.07;
+    private double moveStep = 32;
 
     @FXML
     Canvas canvas;
@@ -42,7 +41,8 @@ public class MainWindowController {
         canvas.setHeight(CANVAS_WIDTH);
         canvas.setWidth(CANVAS_WIDTH);
         loadPattern();
-        paintImageOnCanvas();
+//        paintImageOnCanvas();
+        cudaPaint();
     }
 
     private void cudaPaint() {
@@ -108,13 +108,23 @@ public class MainWindowController {
         cudaPaint();
     }
 
-    public void zoomUp(ActionEvent actionEvent) {
+    public void decreaseZoom(ActionEvent actionEvent) {
+        System.out.println("decreaseZoom");
         zoom *= zoomStep;
         cudaPaint();
     }
 
-    public void zoomDown(ActionEvent actionEvent) {
+    public void increaseZoom(ActionEvent actionEvent) {
+        System.out.println("increaseZoom");
         zoom /= zoomStep;
+        cudaPaint();
+    }
+
+    public void setPosition(MouseEvent mouseEvent) {
+        double diffCenterX = CANVAS_WIDTH / 2.0 - mouseEvent.getX();
+        double diffCenterY = CANVAS_WIDTH / 2.0 - mouseEvent.getY();
+        posX -= diffCenterX * zoom;
+        posY -= diffCenterY * zoom;
         cudaPaint();
     }
 }
