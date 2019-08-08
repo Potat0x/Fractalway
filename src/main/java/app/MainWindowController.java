@@ -21,7 +21,7 @@ public class MainWindowController {
     private final PatternPainter patternPainter;
     private final CudaPainter painter;
 
-    private int maxIter = 250;
+    private int maxIter = 200;
 
     private double zoom = 0.0055;
     private double zoomStep = 1.2;

@@ -20,7 +20,7 @@ __global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter
     double pIm = (y - wh/2.0)*zoom+posY;
 
     int i = 0;
-    while(i++ < maxIter)
+    while(i++ < maxIter-1)
     {
         // zNext = zPrev*zPrev + p
         zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + pRe;
@@ -36,10 +36,7 @@ __global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter
     }
 
     double color = (255.0*i)/(1.0*maxIter);
-//    r[idx] = 0.45*color;
-//    g[idx] = color;
-//    b[idx] = abs(255-color)/3.0;
-    r[idx] = 0.55*color;
-    g[idx] = color*0.9;
-    b[idx] = abs(255-color)/3.0;
+    r[idx] = 17.0*(abs(255-color)/255.0);
+    g[idx] = 255.0*(color/255.0);
+    b[idx] = 33.0*(abs(255-color)/255.0);
 }
