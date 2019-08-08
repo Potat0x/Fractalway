@@ -12,6 +12,9 @@ import javafx.scene.paint.Color;
 
 import java.awt.*;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.is;
+
 public class MainWindowController {
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
@@ -114,22 +117,14 @@ public class MainWindowController {
     }
 
     public void handleKeyPressed(KeyEvent keyEvent) {
-        //todo: vavr pattern matching
-        KeyCode key = keyEvent.getCode();
-        if (key == KeyCode.LEFT) {
-            posX -= moveStep * zoom;
-        } else if (key == KeyCode.RIGHT) {
-            posX += moveStep * zoom;
-        } else if (key == KeyCode.UP) {
-            posY -= moveStep * zoom;
-        } else if (key == KeyCode.DOWN) {
-            posY += moveStep * zoom;
-        } else if (key == KeyCode.A) {
-            zoom *= zoomStep;
-        } else if (key == KeyCode.D) {
-            zoom /= zoomStep;
-        }
-        cudaPaint();
+        Match(keyEvent.getCode()).option(
+                Case($(is(KeyCode.UP)), o -> run(() -> posY -= moveStep * zoom)),
+                Case($(is(KeyCode.DOWN)), o -> run(() -> posY += moveStep * zoom)),
+                Case($(is(KeyCode.LEFT)), o -> run(() -> posX -= moveStep * zoom)),
+                Case($(is(KeyCode.RIGHT)), o -> run(() -> posX += moveStep * zoom)),
+                Case($(is(KeyCode.D)), o -> run(() -> zoom /= zoomStep)),
+                Case($(is(KeyCode.A)), o -> run(() -> zoom *= zoomStep))
+        ).peek(x -> cudaPaint());
     }
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
