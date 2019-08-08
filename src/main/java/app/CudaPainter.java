@@ -11,6 +11,7 @@ import static jcuda.driver.JCudaDriver.*;
 
 class CudaPainter {
     private final int imageWidth;
+    private final int imageHeight;
     private final long arraySizeInBytes;
     private final String ptxFileName;
     private final String functionName;
@@ -20,11 +21,12 @@ class CudaPainter {
     private CUdeviceptr deviceOutputB;
     private CUfunction function;
 
-    CudaPainter(int imageWidth, String kernelFilename, String functionName) {
+    CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName) {
         this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
         this.ptxFileName = new File(CudaPainter.class.getResource(kernelFilename).getFile()).getAbsolutePath();
         this.functionName = functionName;
-        arraySizeInBytes = imageWidth * imageWidth * Sizeof.INT;
+        arraySizeInBytes = imageWidth * imageHeight * Sizeof.INT;
         threadsPerBlock = 32;
         prepareCuda();
     }
@@ -36,14 +38,17 @@ class CudaPainter {
                 Pointer.to(new double[]{posX}),
                 Pointer.to(new double[]{posY}),
                 Pointer.to(new int[]{maxIter}),
+                Pointer.to(new int[]{imageWidth}),
+                Pointer.to(new int[]{imageHeight}),
                 Pointer.to(deviceOutputR),
                 Pointer.to(deviceOutputG),
                 Pointer.to(deviceOutputB)
         );
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
-        int blocksPerGrid = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
-        dim3 dimGrid = new dim3(blocksPerGrid, blocksPerGrid, 1);
+        int blocksPerGridX = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
+        int blocksPerGridY = (imageHeight + threadsPerBlock - 1) / threadsPerBlock;
+        dim3 dimGrid = new dim3(blocksPerGridX, blocksPerGridY, 1);
 
         System.out.println("block " + dimBlock + "\ngrid  " + dimGrid);
 

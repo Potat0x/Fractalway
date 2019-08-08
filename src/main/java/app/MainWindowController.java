@@ -13,7 +13,8 @@ import javafx.scene.paint.Color;
 import java.awt.*;
 
 public class MainWindowController {
-    private final int CANVAS_WIDTH = 512;
+    private final int CANVAS_WIDTH = 800;
+    private final int CANVAS_HEIGHT = 600;
     private final int[] red;
     private final int[] green;
     private final int[] blue;
@@ -33,20 +34,20 @@ public class MainWindowController {
     Canvas canvas;
 
     public MainWindowController() {
-        int arraySize = CANVAS_WIDTH * CANVAS_WIDTH;
+        int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.red = new int[arraySize];
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
-        painter = new CudaPainter(CANVAS_WIDTH, "/kernels/mandelbrotSet.ptx", "mandelbrotSet");
+        painter = new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, "/kernels/mandelbrotSet.ptx", "mandelbrotSet");
     }
 
     @FXML
     public void initialize() {
-        canvas.setHeight(CANVAS_WIDTH);
         canvas.setWidth(CANVAS_WIDTH);
+        canvas.setHeight(CANVAS_HEIGHT);
         canvas.setFocusTraversable(true);
-        loadPattern();
+//        loadPattern();
 //        paintImageOnCanvas();
         cudaPaint();
     }
@@ -62,7 +63,7 @@ public class MainWindowController {
 
     private void paintImageOnCanvas() {
         PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
-        for (int y = 0; y < CANVAS_WIDTH; y++) {
+        for (int y = 0; y < CANVAS_HEIGHT; y++) {
             for (int x = 0; x < CANVAS_WIDTH; x++) {
                 pixelWriter.setColor(x, y, createColor(x, y));
             }
@@ -133,13 +134,13 @@ public class MainWindowController {
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
         double diffCenterX = CANVAS_WIDTH / 2.0 - eventX;
-        double diffCenterY = CANVAS_WIDTH / 2.0 - eventY;
+        double diffCenterY = CANVAS_HEIGHT / 2.0 - eventY;
         posX -= diffCenterX * zoom;
         posY -= diffCenterY * zoom;
     }
 
     private void moveMouseToCanvasCenter() {
-        Point2D point2D = canvas.localToScreen(CANVAS_WIDTH / 2.0, CANVAS_WIDTH / 2.0);
+        Point2D point2D = canvas.localToScreen(CANVAS_WIDTH / 2.0, CANVAS_HEIGHT / 2.0);
         setMousePos(Math.round(point2D.getX()), Math.round(point2D.getY()));
     }
 

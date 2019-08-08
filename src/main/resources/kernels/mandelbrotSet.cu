@@ -1,13 +1,11 @@
 extern "C"
-__global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter, int* r, int* g, int* b)
+__global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter, int width, int height, int* r, int* g, int* b)
 {
-    const int wh = 512;
-
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int idx = y * wh + x;
+    int idx = y * width + x;
 
-    if(x >= wh || y >= wh){
+    if(x >= width || y >= height){
         return;
     }
 
@@ -16,8 +14,8 @@ __global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter
     double zNextRe = 0;
     double zNextIm = 0;
 
-    double pRe = (x - wh/2.0)*zoom+posX;
-    double pIm = (y - wh/2.0)*zoom+posY;
+    double pRe = (x - width/2.0)*zoom+posX;
+    double pIm = (y - height/2.0)*zoom+posY;
 
     int i = 0;
     while(i++ < maxIter-1)

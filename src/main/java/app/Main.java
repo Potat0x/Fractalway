@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main_window.fxml"));
         primaryStage.setTitle("Fractal Generator");
-        primaryStage.setScene(new Scene(root, 576, 576));
+        primaryStage.setScene(new Scene(root, 820, 620));
         primaryStage.show();
     }
 
