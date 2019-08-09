@@ -34,8 +34,8 @@ class CudaPainter {
         prepareCuda();
     }
 
-    void paint(int[] red, int[] green, int[] blue, double zoom, double posX, double posY, int maxIter, double... fractalSpecificParams) {
-        Pointer kernelParameters = prepareKernelParams(zoom, posX, posY, maxIter, fractalSpecificParams);
+    void paint(int[] red, int[] green, int[] blue, Fractal fractal, double... fractalSpecificParams) {
+        Pointer kernelParameters = prepareKernelParams(fractal, fractalSpecificParams);
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
         int blocksPerGridX = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
@@ -87,12 +87,12 @@ class CudaPainter {
         }
     }
 
-    private Pointer prepareKernelParams(double zoom, double posX, double posY, int maxIter, double... fractalSpecificParams) {
+    private Pointer prepareKernelParams(Fractal fractal, double... fractalSpecificParams) {
         List<Pointer> paramPointers = new ArrayList<>(Arrays.asList(
-                Pointer.to(new double[]{zoom}),
-                Pointer.to(new double[]{posX}),
-                Pointer.to(new double[]{posY}),
-                Pointer.to(new int[]{maxIter}),
+                Pointer.to(new double[]{fractal.zoom}),
+                Pointer.to(new double[]{fractal.posX}),
+                Pointer.to(new double[]{fractal.posY}),
+                Pointer.to(new int[]{fractal.maxIter}),
                 Pointer.to(new int[]{imageWidth}),
                 Pointer.to(new int[]{imageHeight}),
                 Pointer.to(deviceOutputR),

@@ -24,17 +24,9 @@ public class MainWindowController {
     private final int[] green;
     private final int[] blue;
 
-    private FractalType fractalType = FractalType.MANDELBROT_SET;
     private final PatternPainter patternPainter;
+    private Fractal fractal;
     private CudaPainter painter;
-
-    private int maxIter = 200;
-
-    private double zoom = 0.0055;
-    private double zoomStep = 1.2;
-    private double posX = 0;
-    private double posY = 0;
-    private double moveStep = 32;
 
     @FXML
     Canvas canvas;
@@ -45,6 +37,7 @@ public class MainWindowController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
+        fractal = new Fractal(FractalType.MANDELBROT_SET);
         painter = createFractalPainter();
     }
 
@@ -60,8 +53,8 @@ public class MainWindowController {
 
     private void cudaPaint(double... fractalSpecificParams) {
         long cudaStart = System.currentTimeMillis();
-        painter.paint(red, green, blue, zoom, posX, posY, maxIter, fractalSpecificParams);
-        System.out.println("cudaPaint (" + (System.currentTimeMillis() - cudaStart) + "ms): zoom = " + zoom + "; posX = " + posX + "; posY = " + posY + ";");
+        painter.paint(red, green, blue, fractal, fractalSpecificParams);
+        System.out.println("cudaPaint (" + (System.currentTimeMillis() - cudaStart) + "ms): " + fractal.getViewAsString());
         long paintStart = System.currentTimeMillis();
         paintImageOnCanvas();
         System.out.println("paintImageOnCanvas: " + (System.currentTimeMillis() - paintStart) + "ms");
@@ -72,14 +65,14 @@ public class MainWindowController {
     }
 
     private double[] getFractalParams() {
-        return Match(fractalType).of(
+        return Match(fractal.type).of(
                 Case($(is(FractalType.JULIA_SET)), new double[]{-0.8, 0.156}),
                 Case($(is(FractalType.MANDELBROT_SET)), new double[0])
         );
     }
 
     private CudaPainter createFractalPainter() {
-        Tuple2<String, String> kernelFileAndName = Match(fractalType).of(
+        Tuple2<String, String> kernelFileAndName = Match(fractal.type).of(
                 Case($(is(FractalType.MANDELBROT_SET)), Tuple.of("/kernels/mandelbrotSet.ptx", "mandelbrotSet")),
                 Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet"))
         );
@@ -130,9 +123,9 @@ public class MainWindowController {
         }
 
         if (scrollEvent.getDeltaY() > 0) {
-            zoom /= zoomStep;
+            fractal.zoomIn();
         } else {
-            zoom *= zoomStep;
+            fractal.zoomOut();
         }
 
         drawFractal();
@@ -140,20 +133,17 @@ public class MainWindowController {
 
     public void handleKeyPressed(KeyEvent keyEvent) {
         Match(keyEvent.getCode()).option(
-                Case($(is(KeyCode.UP)), o -> run(() -> posY -= moveStep * zoom)),
-                Case($(is(KeyCode.DOWN)), o -> run(() -> posY += moveStep * zoom)),
-                Case($(is(KeyCode.LEFT)), o -> run(() -> posX -= moveStep * zoom)),
-                Case($(is(KeyCode.RIGHT)), o -> run(() -> posX += moveStep * zoom)),
-                Case($(is(KeyCode.D)), o -> run(() -> zoom /= zoomStep)),
-                Case($(is(KeyCode.A)), o -> run(() -> zoom *= zoomStep))
+                Case($(is(KeyCode.UP)), o -> run(() -> fractal.moveUp())),
+                Case($(is(KeyCode.DOWN)), o -> run(() -> fractal.moveDown())),
+                Case($(is(KeyCode.LEFT)), o -> run(() -> fractal.moveLeft())),
+                Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
+                Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
+                Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut()))
         ).peek(x -> drawFractal());
     }
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
-        double diffCenterX = CANVAS_WIDTH / 2.0 - eventX;
-        double diffCenterY = CANVAS_HEIGHT / 2.0 - eventY;
-        posX -= diffCenterX * zoom;
-        posY -= diffCenterY * zoom;
+        fractal.moveFractalPointToImageCenter(CANVAS_WIDTH, CANVAS_HEIGHT, eventX, eventY);
     }
 
     private void moveMouseToCanvasCenter() {
