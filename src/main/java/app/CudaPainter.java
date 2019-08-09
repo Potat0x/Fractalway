@@ -34,6 +34,8 @@ class CudaPainter {
     void paint(int[] red, int[] green, int[] blue, double zoom, double posX, double posY, int maxIter) {
 
         Pointer kernelParameters = Pointer.to(
+                Pointer.to(new double[]{-0.8}),
+                Pointer.to(new double[]{0.156}),
                 Pointer.to(new double[]{zoom}),
                 Pointer.to(new double[]{posX}),
                 Pointer.to(new double[]{posY}),

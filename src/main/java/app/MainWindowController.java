@@ -42,7 +42,7 @@ public class MainWindowController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
-        painter = new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, "/kernels/mandelbrotSet.ptx", "mandelbrotSet");
+        painter = new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, "/kernels/juliaSet.ptx", "juliaSet");
     }
 
     @FXML
