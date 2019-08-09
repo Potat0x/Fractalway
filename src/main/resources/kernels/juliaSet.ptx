@@ -16,14 +16,14 @@
 	.param .f64 juliaSet_param_0,
 	.param .f64 juliaSet_param_1,
 	.param .f64 juliaSet_param_2,
-	.param .f64 juliaSet_param_3,
-	.param .f64 juliaSet_param_4,
+	.param .u32 juliaSet_param_3,
+	.param .u32 juliaSet_param_4,
 	.param .u32 juliaSet_param_5,
-	.param .u32 juliaSet_param_6,
-	.param .u32 juliaSet_param_7,
+	.param .u64 juliaSet_param_6,
+	.param .u64 juliaSet_param_7,
 	.param .u64 juliaSet_param_8,
-	.param .u64 juliaSet_param_9,
-	.param .u64 juliaSet_param_10
+	.param .f64 juliaSet_param_9,
+	.param .f64 juliaSet_param_10
 )
 {
 	.reg .pred 	%p<6>;
@@ -35,14 +35,14 @@
 	ld.param.f64 	%fd7, [juliaSet_param_0];
 	ld.param.f64 	%fd8, [juliaSet_param_1];
 	ld.param.f64 	%fd9, [juliaSet_param_2];
-	ld.param.f64 	%fd10, [juliaSet_param_3];
-	ld.param.f64 	%fd11, [juliaSet_param_4];
-	ld.param.u32 	%r7, [juliaSet_param_5];
-	ld.param.u32 	%r8, [juliaSet_param_6];
-	ld.param.u32 	%r9, [juliaSet_param_7];
-	ld.param.u64 	%rd4, [juliaSet_param_8];
-	ld.param.u64 	%rd5, [juliaSet_param_9];
-	ld.param.u64 	%rd6, [juliaSet_param_10];
+	ld.param.u32 	%r7, [juliaSet_param_3];
+	ld.param.u32 	%r8, [juliaSet_param_4];
+	ld.param.u32 	%r9, [juliaSet_param_5];
+	ld.param.u64 	%rd4, [juliaSet_param_6];
+	ld.param.u64 	%rd5, [juliaSet_param_7];
+	ld.param.u64 	%rd6, [juliaSet_param_8];
+	ld.param.f64 	%fd10, [juliaSet_param_9];
+	ld.param.f64 	%fd11, [juliaSet_param_10];
 	mov.u32 	%r10, %ntid.y;
 	mov.u32 	%r11, %ctaid.y;
 	mov.u32 	%r12, %tid.y;
@@ -64,12 +64,12 @@
 	cvt.rn.f64.s32	%fd13, %r8;
 	mul.f64 	%fd14, %fd13, 0d3FE0000000000000;
 	sub.f64 	%fd15, %fd12, %fd14;
-	fma.rn.f64 	%fd38, %fd15, %fd9, %fd10;
+	fma.rn.f64 	%fd38, %fd15, %fd7, %fd8;
 	cvt.rn.f64.s32	%fd16, %r9;
 	mul.f64 	%fd17, %fd16, 0d3FE0000000000000;
 	cvt.rn.f64.s32	%fd18, %r1;
 	sub.f64 	%fd19, %fd18, %fd17;
-	fma.rn.f64 	%fd39, %fd19, %fd9, %fd11;
+	fma.rn.f64 	%fd39, %fd19, %fd7, %fd9;
 	add.s32 	%r4, %r7, -1;
 	mov.u32 	%r20, 0;
 
@@ -81,9 +81,9 @@ BB0_2:
 	mul.f64 	%fd20, %fd38, %fd38;
 	mul.f64 	%fd21, %fd39, %fd39;
 	sub.f64 	%fd22, %fd20, %fd21;
-	add.f64 	%fd5, %fd22, %fd7;
+	add.f64 	%fd5, %fd22, %fd10;
 	add.f64 	%fd23, %fd38, %fd38;
-	fma.rn.f64 	%fd39, %fd23, %fd39, %fd8;
+	fma.rn.f64 	%fd39, %fd23, %fd39, %fd11;
 	mul.f64 	%fd24, %fd5, %fd5;
 	fma.rn.f64 	%fd25, %fd39, %fd39, %fd24;
 	setp.leu.f64	%p5, %fd25, 0d4010000000000000;

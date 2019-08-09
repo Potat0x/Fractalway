@@ -1,5 +1,7 @@
 package app;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -22,8 +24,9 @@ public class MainWindowController {
     private final int[] green;
     private final int[] blue;
 
+    private FractalType fractalType = FractalType.MANDELBROT_SET;
     private final PatternPainter patternPainter;
-    private final CudaPainter painter;
+    private CudaPainter painter;
 
     private int maxIter = 200;
 
@@ -42,7 +45,7 @@ public class MainWindowController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
-        painter = new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, "/kernels/juliaSet.ptx", "juliaSet");
+        painter = createFractalPainter();
     }
 
     @FXML
@@ -52,16 +55,35 @@ public class MainWindowController {
         canvas.setFocusTraversable(true);
 //        loadPattern();
 //        paintImageOnCanvas();
-        cudaPaint();
+        drawFractal();
     }
 
-    private void cudaPaint() {
+    private void cudaPaint(double... fractalSpecificParams) {
         long cudaStart = System.currentTimeMillis();
-        painter.paint(red, green, blue, zoom, posX, posY, maxIter);
+        painter.paint(red, green, blue, zoom, posX, posY, maxIter, fractalSpecificParams);
         System.out.println("cudaPaint (" + (System.currentTimeMillis() - cudaStart) + "ms): zoom = " + zoom + "; posX = " + posX + "; posY = " + posY + ";");
         long paintStart = System.currentTimeMillis();
         paintImageOnCanvas();
         System.out.println("paintImageOnCanvas: " + (System.currentTimeMillis() - paintStart) + "ms");
+    }
+
+    private void drawFractal() {
+        cudaPaint(getFractalParams());
+    }
+
+    private double[] getFractalParams() {
+        return Match(fractalType).of(
+                Case($(is(FractalType.JULIA_SET)), new double[]{-0.8, 0.156}),
+                Case($(is(FractalType.MANDELBROT_SET)), new double[0])
+        );
+    }
+
+    private CudaPainter createFractalPainter() {
+        Tuple2<String, String> kernelFileAndName = Match(fractalType).of(
+                Case($(is(FractalType.MANDELBROT_SET)), Tuple.of("/kernels/mandelbrotSet.ptx", "mandelbrotSet")),
+                Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet"))
+        );
+        return new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, kernelFileAndName._1, kernelFileAndName._2);
     }
 
     private void paintImageOnCanvas() {
@@ -95,7 +117,7 @@ public class MainWindowController {
 
     public void updateFractalPosition(MouseEvent mouseEvent) {
         moveClickedFractalPointToCanvasCenter(mouseEvent.getX(), mouseEvent.getY());
-        cudaPaint();
+        drawFractal();
         if (mouseEvent.isControlDown()) {
             moveMouseToCanvasCenter();
         }
@@ -113,7 +135,7 @@ public class MainWindowController {
             zoom *= zoomStep;
         }
 
-        cudaPaint();
+        drawFractal();
     }
 
     public void handleKeyPressed(KeyEvent keyEvent) {
@@ -124,7 +146,7 @@ public class MainWindowController {
                 Case($(is(KeyCode.RIGHT)), o -> run(() -> posX += moveStep * zoom)),
                 Case($(is(KeyCode.D)), o -> run(() -> zoom /= zoomStep)),
                 Case($(is(KeyCode.A)), o -> run(() -> zoom *= zoomStep))
-        ).peek(x -> cudaPaint());
+        ).peek(x -> drawFractal());
     }
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {

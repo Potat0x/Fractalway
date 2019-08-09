@@ -1,5 +1,5 @@
 extern "C"
-__global__ void juliaSet(double cRe, double cIm, double zoom, double posX, double posY, int maxIter, int width, int height, int* r, int* g, int* b)
+__global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int width, int height, int* r, int* g, int* b, double cRe, double cIm)
 {
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int x = blockIdx.x * blockDim.x + threadIdx.x;

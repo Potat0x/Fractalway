@@ -6,6 +6,9 @@ import jcuda.driver.*;
 import jcuda.runtime.dim3;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static jcuda.driver.JCudaDriver.*;
 
@@ -31,21 +34,8 @@ class CudaPainter {
         prepareCuda();
     }
 
-    void paint(int[] red, int[] green, int[] blue, double zoom, double posX, double posY, int maxIter) {
-
-        Pointer kernelParameters = Pointer.to(
-                Pointer.to(new double[]{-0.8}),
-                Pointer.to(new double[]{0.156}),
-                Pointer.to(new double[]{zoom}),
-                Pointer.to(new double[]{posX}),
-                Pointer.to(new double[]{posY}),
-                Pointer.to(new int[]{maxIter}),
-                Pointer.to(new int[]{imageWidth}),
-                Pointer.to(new int[]{imageHeight}),
-                Pointer.to(deviceOutputR),
-                Pointer.to(deviceOutputG),
-                Pointer.to(deviceOutputB)
-        );
+    void paint(int[] red, int[] green, int[] blue, double zoom, double posX, double posY, int maxIter, double... fractalSpecificParams) {
+        Pointer kernelParameters = prepareKernelParams(zoom, posX, posY, maxIter, fractalSpecificParams);
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
         int blocksPerGridX = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
@@ -95,6 +85,25 @@ class CudaPainter {
         for (CUdeviceptr devptr : devicePtr) {
             cuMemFree(devptr);
         }
+    }
+
+    private Pointer prepareKernelParams(double zoom, double posX, double posY, int maxIter, double... fractalSpecificParams) {
+        List<Pointer> paramPointers = new ArrayList<>(Arrays.asList(
+                Pointer.to(new double[]{zoom}),
+                Pointer.to(new double[]{posX}),
+                Pointer.to(new double[]{posY}),
+                Pointer.to(new int[]{maxIter}),
+                Pointer.to(new int[]{imageWidth}),
+                Pointer.to(new int[]{imageHeight}),
+                Pointer.to(deviceOutputR),
+                Pointer.to(deviceOutputG),
+                Pointer.to(deviceOutputB)
+        ));
+
+        for (double param : fractalSpecificParams) {
+            paramPointers.add(Pointer.to(new double[]{param}));
+        }
+        return Pointer.to(paramPointers.toArray(new Pointer[0]));
     }
 
     @Override //todo: finalize is deprecated since Java 9
