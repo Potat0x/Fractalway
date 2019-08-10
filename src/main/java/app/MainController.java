@@ -184,6 +184,7 @@ public class MainController {
         new WindowBuilder(filename)
                 .withController(controller)
                 .withTitle(title)
+                .closedByEscapeKey(true)
                 .withOnHiddenEventHandler(event -> drawFractal())
                 .build().show();
     }

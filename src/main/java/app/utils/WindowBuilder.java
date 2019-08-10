@@ -3,6 +3,7 @@ package app.utils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -13,10 +14,12 @@ public class WindowBuilder {
     private String filename;
     private Object controller;
     private String title;
-    private EventHandler<WindowEvent> windowEventEventHandler;
+    private boolean closedByEscKey;
+    private EventHandler<WindowEvent> onHiddenEventHandler;
 
     public WindowBuilder(String filename) {
         this.filename = filename;
+        closedByEscKey = false;
     }
 
     public WindowBuilder withController(Object controller) {
@@ -25,12 +28,17 @@ public class WindowBuilder {
     }
 
     public WindowBuilder withOnHiddenEventHandler(EventHandler<WindowEvent> handler) {
-        this.windowEventEventHandler = handler;
+        this.onHiddenEventHandler = handler;
         return this;
     }
 
     public WindowBuilder withTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public WindowBuilder closedByEscapeKey(boolean closeOnEscapeKeyPressed) {
+        this.closedByEscKey = closeOnEscapeKeyPressed;
         return this;
     }
 
@@ -40,9 +48,17 @@ public class WindowBuilder {
             loader.setController(controller);
         }
         Stage stage = new Stage();
-        stage.setScene(new Scene(loader.load()));
+        Scene scene = new Scene(loader.load());
+        if (closedByEscKey) {
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    stage.close();
+                }
+            });
+        }
+        stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setOnHidden(windowEventEventHandler);
+        stage.setOnHidden(onHiddenEventHandler);
         stage.setResizable(false);
         stage.setTitle(title);
         return stage;

@@ -15,34 +15,34 @@
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="zoomField" text="zoom" />
+      <TextField fx:id="zoomField" onAction="#applyAndClose" />
       <Label text="Position X">
          <VBox.margin>
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="positionXField" />
+      <TextField fx:id="positionXField" onAction="#applyAndClose" />
       <Label text="Position Y">
          <VBox.margin>
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="positionYField" />
+      <TextField fx:id="positionYField" onAction="#applyAndClose" />
       <Label text="Zoom multiplier">
          <VBox.margin>
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="zoomMultiplierField" />
+      <TextField fx:id="zoomMultiplierField" onAction="#applyAndClose" />
       <Label text="Position step (px)">
          <VBox.margin>
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="positionStepField" />
+      <TextField fx:id="positionStepField" onAction="#applyAndClose" />
       <HBox prefHeight="0.0" prefWidth="174.0" spacing="3.0">
          <children>
-            <Button maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleOkButton" prefWidth="200.0" text="OK" HBox.hgrow="ALWAYS" />
+            <Button maxWidth="-Infinity" mnemonicParsing="false" onAction="#applyAndClose" prefWidth="200.0" text="OK" HBox.hgrow="ALWAYS" />
             <Button maxWidth="-Infinity" mnemonicParsing="false" onAction="#closeWindow" prefWidth="200.0" text="Cancel" HBox.hgrow="ALWAYS" />
          </children>
          <padding>

@@ -30,7 +30,7 @@ public class NavigationSettingsController extends BaseController {
     }
 
     @FXML
-    private void handleOkButton(ActionEvent actionEvent) {
+    private void applyAndClose(ActionEvent actionEvent) {
         readForm();
         closeWindow();
     }

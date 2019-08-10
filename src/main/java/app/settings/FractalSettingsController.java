@@ -21,7 +21,7 @@ public class FractalSettingsController extends BaseController {
     }
 
     @FXML
-    private void handleOkButton() {
+    private void applyAndClose() {
         fractal.maxIter = Integer.parseInt(iterationsField.getText());
         closeWindow();
     }
