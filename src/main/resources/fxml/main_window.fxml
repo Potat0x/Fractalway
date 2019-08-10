@@ -1,10 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="467.0" prefWidth="575.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainWindowController">
+<GridPane alignment="TOP_RIGHT" prefHeight="368.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.MainWindowController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
    <children>
-      <Canvas fx:id="canvas" height="555.0" layoutX="10.0" layoutY="8.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="555.0" />
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="300.0" />
+            <MenuBar prefHeight="25.0" prefWidth="337.0">
+               <menus>
+                  <Menu mnemonicParsing="false" text="Fractal" visible="false">
+                     <items>
+                        <CheckMenuItem mnemonicParsing="false" text="Mandelbrot set" />
+                        <RadioMenuItem mnemonicParsing="false" text="Julia set" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Settings">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
+                        <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Iterations" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+         </children>
+      </AnchorPane>
    </children>
-</AnchorPane>
+   <padding>
+      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+   </padding>
+</GridPane>

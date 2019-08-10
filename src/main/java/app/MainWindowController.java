@@ -1,7 +1,11 @@
 package app;
 
+import app.settings.FractalSettingsController;
+import app.settings.NavigationSettingsController;
+import app.utils.WindowBuilder;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -13,6 +17,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
+import java.io.IOException;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
@@ -29,7 +34,7 @@ public class MainWindowController {
     private CudaPainter painter;
 
     @FXML
-    Canvas canvas;
+    private Canvas canvas;
 
     public MainWindowController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
@@ -37,18 +42,63 @@ public class MainWindowController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
-        fractal = new Fractal(FractalType.MANDELBROT_SET);
+        fractal = new Fractal(FractalType.JULIA_SET);
         painter = createFractalPainter();
     }
 
     @FXML
-    public void initialize() {
+    private void initialize() {
         canvas.setWidth(CANVAS_WIDTH);
         canvas.setHeight(CANVAS_HEIGHT);
         canvas.setFocusTraversable(true);
-//        loadPattern();
-//        paintImageOnCanvas();
+//        drawPattern();
         drawFractal();
+    }
+
+    @FXML
+    private void updateFractalPosition(MouseEvent mouseEvent) {
+        moveClickedFractalPointToCanvasCenter(mouseEvent.getX(), mouseEvent.getY());
+        drawFractal();
+        if (mouseEvent.isControlDown()) {
+            moveMouseToCanvasCenter();
+        }
+    }
+
+    @FXML
+    private void updateFractalZoom(ScrollEvent scrollEvent) {
+        if (scrollEvent.isControlDown()) {
+            moveMouseToCanvasCenter();
+            moveClickedFractalPointToCanvasCenter(scrollEvent.getX(), scrollEvent.getY());
+        }
+
+        if (scrollEvent.getDeltaY() > 0) {
+            fractal.zoomIn();
+        } else {
+            fractal.zoomOut();
+        }
+        drawFractal();
+    }
+
+    @FXML
+    private void handleKeyPressed(KeyEvent keyEvent) {
+        Match(keyEvent.getCode()).option(
+                Case($(is(KeyCode.UP)), o -> run(() -> fractal.moveUp())),
+                Case($(is(KeyCode.DOWN)), o -> run(() -> fractal.moveDown())),
+                Case($(is(KeyCode.LEFT)), o -> run(() -> fractal.moveLeft())),
+                Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
+                Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
+                Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut()))
+        ).peek(x -> drawFractal());
+    }
+
+    @FXML
+    private void showNavigationSettingsWindow(ActionEvent actionEvent) throws IOException {
+        openWindow("/fxml/navigation_settings.fxml", new NavigationSettingsController(fractal), "Navigation settings");
+    }
+
+    @FXML
+    private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
+        openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal), "Fractal settings");
     }
 
     private void cudaPaint(double... fractalSpecificParams) {
@@ -91,9 +141,14 @@ public class MainWindowController {
     private void loadPattern() {
         for (int y = 0; y < canvas.getHeight(); y++) {
             for (int x = 0; x < canvas.getWidth(); x++) {
-                patternPainter.gradient(x, y);
+                patternPainter.diagonalStripes(x, y);
             }
         }
+    }
+
+    private void drawPattern() {
+        loadPattern();
+        paintImageOnCanvas();
     }
 
     private Color createColor(int x, int y) {
@@ -106,40 +161,6 @@ public class MainWindowController {
 
     private int calculateIndex(int x, int y) {
         return CANVAS_WIDTH * y + x;
-    }
-
-    public void updateFractalPosition(MouseEvent mouseEvent) {
-        moveClickedFractalPointToCanvasCenter(mouseEvent.getX(), mouseEvent.getY());
-        drawFractal();
-        if (mouseEvent.isControlDown()) {
-            moveMouseToCanvasCenter();
-        }
-    }
-
-    public void updateFractalZoom(ScrollEvent scrollEvent) {
-        if (scrollEvent.isControlDown()) {
-            moveMouseToCanvasCenter();
-            moveClickedFractalPointToCanvasCenter(scrollEvent.getX(), scrollEvent.getY());
-        }
-
-        if (scrollEvent.getDeltaY() > 0) {
-            fractal.zoomIn();
-        } else {
-            fractal.zoomOut();
-        }
-
-        drawFractal();
-    }
-
-    public void handleKeyPressed(KeyEvent keyEvent) {
-        Match(keyEvent.getCode()).option(
-                Case($(is(KeyCode.UP)), o -> run(() -> fractal.moveUp())),
-                Case($(is(KeyCode.DOWN)), o -> run(() -> fractal.moveDown())),
-                Case($(is(KeyCode.LEFT)), o -> run(() -> fractal.moveLeft())),
-                Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
-                Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
-                Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut()))
-        ).peek(x -> drawFractal());
     }
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
@@ -157,5 +178,13 @@ public class MainWindowController {
         } catch (AWTException e) {
             e.printStackTrace();
         }
+    }
+
+    private void openWindow(String filename, Object controller, String title) throws IOException {
+        new WindowBuilder(filename)
+                .withController(controller)
+                .withTitle(title)
+                .withOnHiddenEventHandler(event -> drawFractal())
+                .build().show();
     }
 }

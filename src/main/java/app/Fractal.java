@@ -1,13 +1,13 @@
 package app;
 
-class Fractal {
+public class Fractal {
     final FractalType type;
-    int maxIter = 200;
-    double zoom = 0.0055;
-    double posX = 0;
-    double posY = 0;
-    double zoomStep = 1.2;
-    double moveStep = 32;
+    public int maxIter = 200;
+    public double zoom = 0.0055;
+    public double posX = 0;
+    public double posY = 0;
+    public double zoomStep = 1.2;
+    public double moveStep = 32;
 
     Fractal(FractalType type) {
         this.type = type;
@@ -29,7 +29,7 @@ class Fractal {
     }
 
     void moveUp() {
-        zoom *= zoomStep;
+        posY -= moveStep * zoom;
     }
 
     void moveDown() {
