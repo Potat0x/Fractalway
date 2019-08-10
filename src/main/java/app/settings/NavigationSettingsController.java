@@ -15,7 +15,7 @@ public class NavigationSettingsController extends BaseController {
     @FXML
     private TextField positionYField;
     @FXML
-    private TextField zoomStepField;
+    private TextField zoomMultiplierField;
     @FXML
     private TextField positionStepField;
 
@@ -39,16 +39,16 @@ public class NavigationSettingsController extends BaseController {
         fractal.zoom = readDouble(zoomField);
         fractal.posX = readDouble(positionXField);
         fractal.posY = readDouble(positionYField);
-        fractal.zoomStep = readDouble(zoomStepField);
-        fractal.moveStep = readDouble(positionStepField);
+        fractal.zoomMultiplier = readDouble(zoomMultiplierField);
+        fractal.positionStep = readDouble(positionStepField);
     }
 
     private void fillForm() {
         assignDoubleToField(zoomField, fractal.zoom);
         assignDoubleToField(positionXField, fractal.posX);
         assignDoubleToField(positionYField, fractal.posY);
-        assignDoubleToField(zoomStepField, fractal.zoomStep);
-        assignDoubleToField(positionStepField, fractal.moveStep);
+        assignDoubleToField(zoomMultiplierField, fractal.zoomMultiplier);
+        assignDoubleToField(positionStepField, fractal.positionStep);
     }
 
     private void assignDoubleToField(TextField textField, double value) {

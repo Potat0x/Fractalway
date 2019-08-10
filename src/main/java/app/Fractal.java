@@ -6,8 +6,8 @@ public class Fractal {
     public double zoom = 0.0055;
     public double posX = 0;
     public double posY = 0;
-    public double zoomStep = 1.2;
-    public double moveStep = 32;
+    public double zoomMultiplier = 1.2;
+    public double positionStep = 32;
 
     Fractal(FractalType type) {
         this.type = type;
@@ -21,27 +21,27 @@ public class Fractal {
     }
 
     void zoomIn() {
-        zoom /= zoomStep;
+        zoom /= zoomMultiplier;
     }
 
     void zoomOut() {
-        zoom *= zoomStep;
+        zoom *= zoomMultiplier;
     }
 
     void moveUp() {
-        posY -= moveStep * zoom;
+        posY -= positionStep * zoom;
     }
 
     void moveDown() {
-        posY += moveStep * zoom;
+        posY += positionStep * zoom;
     }
 
     void moveLeft() {
-        posX -= moveStep * zoom;
+        posX -= positionStep * zoom;
     }
 
     void moveRight() {
-        posX += moveStep * zoom;
+        posX += positionStep * zoom;
     }
 
     String getViewAsString() {

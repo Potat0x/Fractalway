@@ -28,12 +28,12 @@
          </VBox.margin>
       </Label>
       <TextField fx:id="positionYField" />
-      <Label text="Zoom step">
+      <Label text="Zoom multiplier">
          <VBox.margin>
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="zoomStepField" />
+      <TextField fx:id="zoomMultiplierField" />
       <Label text="Position step (px)">
          <VBox.margin>
             <Insets top="3.0" />

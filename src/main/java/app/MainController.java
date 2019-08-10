@@ -22,7 +22,7 @@ import java.io.IOException;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
 
-public class MainWindowController {
+public class MainController {
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
     private final int[] red;
@@ -36,7 +36,7 @@ public class MainWindowController {
     @FXML
     private Canvas canvas;
 
-    public MainWindowController() {
+    public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.red = new int[arraySize];
         this.green = new int[arraySize];
