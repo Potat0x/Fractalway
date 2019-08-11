@@ -42,6 +42,9 @@ public class MainController {
     @FXML
     private Menu fractalMenu;
 
+    @FXML
+    private Menu settingsMenu;
+
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.red = new int[arraySize];
@@ -145,7 +148,7 @@ public class MainController {
 
     private double[] getFractalParams() {
         return Match(fractal.type).of(
-                Case($(is(FractalType.JULIA_SET)), new double[]{-0.8, 0.156}),
+                Case($(is(FractalType.JULIA_SET)), new double[]{fractal.complexParamRe, fractal.complexParamIm}),
                 Case($(is(FractalType.MANDELBROT_SET)), new double[0])
         );
     }

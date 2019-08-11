@@ -59,6 +59,7 @@ public class WindowBuilder {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setOnHidden(onHiddenEventHandler);
+        stage.sizeToScene();
         stage.setResizable(false);
         stage.setTitle(title);
         return stage;

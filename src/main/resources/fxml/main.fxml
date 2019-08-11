@@ -21,13 +21,13 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
             <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="300.0" />
-            <MenuBar prefHeight="25.0" prefWidth="337.0">
+            <MenuBar>
                <menus>
                   <Menu fx:id="fractalMenu" mnemonicParsing="false" text="Fractal" />
-                  <Menu mnemonicParsing="false" text="Settings">
+                  <Menu fx:id="settingsMenu" mnemonicParsing="false" text="Settings">
                      <items>
+                        <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Fractal" />
                         <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
-                        <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Iterations" />
                      </items>
                   </Menu>
                </menus>

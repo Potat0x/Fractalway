@@ -44,18 +44,10 @@ public class NavigationSettingsController extends BaseController {
     }
 
     private void fillForm() {
-        assignDoubleToField(zoomField, fractal.zoom);
-        assignDoubleToField(positionXField, fractal.posX);
-        assignDoubleToField(positionYField, fractal.posY);
-        assignDoubleToField(zoomMultiplierField, fractal.zoomMultiplier);
-        assignDoubleToField(positionStepField, fractal.positionStep);
-    }
-
-    private void assignDoubleToField(TextField textField, double value) {
-        textField.setText(Double.toString(value));
-    }
-
-    private double readDouble(TextField textField) {
-        return Double.parseDouble(textField.getText());
+        setText(zoomField, fractal.zoom);
+        setText(positionXField, fractal.posX);
+        setText(positionYField, fractal.posY);
+        setText(zoomMultiplierField, fractal.zoomMultiplier);
+        setText(positionStepField, fractal.positionStep);
     }
 }
