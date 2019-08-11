@@ -1,8 +1,10 @@
-package app;
+package pl.potat0x.fractalway;
 
-import app.settings.FractalSettingsController;
-import app.settings.NavigationSettingsController;
-import app.utils.WindowBuilder;
+import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.fractal.FractalType;
+import pl.potat0x.fractalway.settings.FractalSettingsController;
+import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.WindowBuilder;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import javafx.event.ActionEvent;

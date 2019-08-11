@@ -1,4 +1,4 @@
-package app;
+package pl.potat0x.fractalway;
 
 class PatternPainter {
     private final int[] red;

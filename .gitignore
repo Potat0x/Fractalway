@@ -1,4 +1,4 @@
 .idea/
-fraktalejcuda.iml
+*.iml
 target/
 *.log

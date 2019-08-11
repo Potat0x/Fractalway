@@ -1,6 +1,6 @@
-package app.settings;
+package pl.potat0x.fractalway.settings;
 
-import app.Fractal;
+import pl.potat0x.fractalway.fractal.Fractal;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;

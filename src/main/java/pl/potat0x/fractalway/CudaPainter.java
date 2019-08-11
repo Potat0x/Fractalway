@@ -1,9 +1,10 @@
-package app;
+package pl.potat0x.fractalway;
 
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.*;
 import jcuda.runtime.dim3;
+import pl.potat0x.fractalway.fractal.Fractal;
 
 import java.io.File;
 import java.util.ArrayList;

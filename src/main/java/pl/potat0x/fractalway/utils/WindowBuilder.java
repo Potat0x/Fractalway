@@ -1,4 +1,4 @@
-package app.utils;
+package pl.potat0x.fractalway.utils;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;

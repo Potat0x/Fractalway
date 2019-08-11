@@ -1,4 +1,4 @@
-package app;
+package pl.potat0x.fractalway.fractal;
 
 public class Fractal {
     public final FractalType type;
@@ -14,42 +14,42 @@ public class Fractal {
     public double complexParamRe = -0.8;
     public double complexParamIm = 0.156;
 
-    Fractal(FractalType type) {
+    public Fractal(FractalType type) {
         this.type = type;
     }
 
-    void moveFractalPointToImageCenter(double imageWidth, double imageHeight, double x, double y) {
+    public void moveFractalPointToImageCenter(double imageWidth, double imageHeight, double x, double y) {
         double diffCenterX = imageWidth / 2.0 - x;
         double diffCenterY = imageHeight / 2.0 - y;
         posX -= diffCenterX * zoom;
         posY -= diffCenterY * zoom;
     }
 
-    void zoomIn() {
+    public void zoomIn() {
         zoom /= zoomMultiplier;
     }
 
-    void zoomOut() {
+    public void zoomOut() {
         zoom *= zoomMultiplier;
     }
 
-    void moveUp() {
+    public void moveUp() {
         posY -= positionStep * zoom;
     }
 
-    void moveDown() {
+    public void moveDown() {
         posY += positionStep * zoom;
     }
 
-    void moveLeft() {
+    public void moveLeft() {
         posX -= positionStep * zoom;
     }
 
-    void moveRight() {
+    public void moveRight() {
         posX += positionStep * zoom;
     }
 
-    String getViewAsString() {
+    public String getViewAsString() {
         return "zoom = " + zoom + "; posX = " + posX + "; posY = " + posY + ";";
     }
 }

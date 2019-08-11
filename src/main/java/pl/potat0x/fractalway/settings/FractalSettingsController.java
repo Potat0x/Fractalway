@@ -1,7 +1,7 @@
-package app.settings;
+package pl.potat0x.fractalway.settings;
 
-import app.Fractal;
-import app.FractalType;
+import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.fractal.FractalType;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;

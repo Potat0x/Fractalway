@@ -1,4 +1,4 @@
-package app.settings;
+package pl.potat0x.fractalway.settings;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

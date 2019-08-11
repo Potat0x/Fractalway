@@ -1,4 +1,4 @@
-package app;
+package pl.potat0x.fractalway.fractal;
 
 public enum FractalType {
     MANDELBROT_SET("Mandelbrot set"),
