@@ -5,6 +5,8 @@ import pl.potat0x.fractalway.fractal.FractalType;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import pl.potat0x.fractalway.validation.DoubleValidator;
+import pl.potat0x.fractalway.validation.IntegerValidator;
 
 public class FractalSettingsController extends BaseController {
     private final Fractal fractal;
@@ -25,14 +27,23 @@ public class FractalSettingsController extends BaseController {
     @FXML
     private void initialize() {
         super.initialize(iterationsField);
+        setCorrectnessWatchers();
         configureForm();
         fillForm();
     }
 
     @FXML
     private void applyAndClose() {
-        readForm();
-        closeWindow();
+        if (isSubmittingUnblocked()) {
+            readForm();
+            closeWindow();
+        }
+    }
+
+    private void setCorrectnessWatchers() {
+        createFormCorrectnessWatcher()
+                .registerFields(new DoubleValidator(), realPartField, imaginaryPartField)
+                .registerFields(new IntegerValidator(), iterationsField);
     }
 
     private void configureForm() {

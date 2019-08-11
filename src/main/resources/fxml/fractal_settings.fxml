@@ -29,7 +29,7 @@
       <TextField fx:id="iterationsField" onAction="#applyAndClose" prefHeight="25.0" prefWidth="92.0" />
       <HBox prefHeight="0.0" prefWidth="174.0" spacing="3.0">
          <children>
-            <Button maxWidth="-Infinity" mnemonicParsing="false" onAction="#applyAndClose" prefWidth="200.0" text="OK" HBox.hgrow="ALWAYS" />
+            <Button fx:id="okButton" maxWidth="-Infinity" mnemonicParsing="false" onAction="#applyAndClose" prefWidth="200.0" text="OK" HBox.hgrow="ALWAYS" />
             <Button maxWidth="-Infinity" mnemonicParsing="false" onAction="#closeWindow" prefWidth="200.0" text="Cancel" HBox.hgrow="ALWAYS" />
          </children>
          <padding>

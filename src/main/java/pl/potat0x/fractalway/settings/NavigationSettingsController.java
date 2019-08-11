@@ -4,6 +4,7 @@ import pl.potat0x.fractalway.fractal.Fractal;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import pl.potat0x.fractalway.validation.DoubleValidator;
 
 public class NavigationSettingsController extends BaseController {
     private final Fractal fractal;
@@ -26,13 +27,20 @@ public class NavigationSettingsController extends BaseController {
     @FXML
     void initialize() {
         super.initialize(zoomField);
+        setCorrectnessWatchers();
         fillForm();
     }
 
     @FXML
     private void applyAndClose(ActionEvent actionEvent) {
-        readForm();
-        closeWindow();
+        if (isSubmittingUnblocked()) {
+            readForm();
+            closeWindow();
+        }
+    }
+
+    private void setCorrectnessWatchers() {
+        createFormCorrectnessWatcher().registerFields(new DoubleValidator(), zoomField, positionXField, positionYField, zoomMultiplierField, positionStepField);
     }
 
     private void readForm() {
