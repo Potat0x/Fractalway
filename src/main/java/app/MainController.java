@@ -9,6 +9,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Menu;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -36,21 +39,21 @@ public class MainController {
     @FXML
     private Canvas canvas;
 
+    @FXML
+    private Menu fractalMenu;
+
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.red = new int[arraySize];
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
-        fractal = new Fractal(FractalType.JULIA_SET);
-        painter = createFractalPainter();
     }
 
     @FXML
     private void initialize() {
-        canvas.setWidth(CANVAS_WIDTH);
-        canvas.setHeight(CANVAS_HEIGHT);
-        canvas.setFocusTraversable(true);
+        initCanvas();
+        initFractalMenu();
 //        drawPattern();
         drawFractal();
     }
@@ -99,6 +102,32 @@ public class MainController {
     @FXML
     private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
         openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal), "Fractal settings");
+    }
+
+    private void initCanvas() {
+        canvas.setWidth(CANVAS_WIDTH);
+        canvas.setHeight(CANVAS_HEIGHT);
+        canvas.setFocusTraversable(true);
+    }
+
+    private void initFractalMenu() {
+        ToggleGroup fractalGroup = new ToggleGroup();
+
+        for (FractalType type : FractalType.values()) {
+            RadioMenuItem menuItem = new RadioMenuItem(type.toString());
+            menuItem.setToggleGroup(fractalGroup);
+            menuItem.setUserData(type);
+            fractalMenu.getItems().add(menuItem);
+        }
+
+        fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            FractalType newType = (FractalType) newValue.getUserData();
+            fractal = new Fractal(newType);
+            painter = createFractalPainter();
+            drawFractal();
+        });
+
+        fractalGroup.getToggles().get(0).setSelected(true);
     }
 
     private void cudaPaint(double... fractalSpecificParams) {
