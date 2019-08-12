@@ -95,7 +95,9 @@ public class MainController {
                 Case($(is(KeyCode.LEFT)), o -> run(() -> fractal.moveLeft())),
                 Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
                 Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
-                Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut()))
+                Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut())),
+                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> fractal.increaseIterations())),
+                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations()))
         ).peek(x -> drawFractal());
     }
 

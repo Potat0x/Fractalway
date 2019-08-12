@@ -28,6 +28,14 @@ public class Fractal {
         posY -= diffCenterY * zoom;
     }
 
+    public void increaseIterations() {
+        iterations = Math.min(++iterations, MAX_ITER);
+    }
+
+    public void decreaseIterations() {
+        iterations = Math.max(--iterations, MIN_ITER);
+    }
+
     public void zoomIn() {
         zoom /= zoomMultiplier;
     }
