@@ -101,12 +101,12 @@ public class MainController {
 
     @FXML
     private void showNavigationSettingsWindow(ActionEvent actionEvent) throws IOException {
-        openWindow("/fxml/navigation_settings.fxml", new NavigationSettingsController(fractal), "Navigation settings");
+        openWindow("/fxml/navigation_settings.fxml", new NavigationSettingsController(fractal, this::drawFractal), "Navigation settings");
     }
 
     @FXML
     private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
-        openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal), "Fractal settings");
+        openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, this::drawFractal), "Fractal settings");
     }
 
     private void initCanvas() {

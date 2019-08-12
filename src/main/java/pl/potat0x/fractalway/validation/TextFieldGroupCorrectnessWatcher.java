@@ -1,6 +1,7 @@
 package pl.potat0x.fractalway.validation;
 
 import javafx.scene.control.TextField;
+import pl.potat0x.fractalway.utils.Action;
 
 import java.util.ArrayList;
 import java.util.List;

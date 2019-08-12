@@ -5,6 +5,7 @@ import pl.potat0x.fractalway.fractal.FractalType;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.validation.DoubleValidator;
 import pl.potat0x.fractalway.validation.IntegerValidator;
 
@@ -20,7 +21,8 @@ public class FractalSettingsController extends BaseController {
     @FXML
     private HBox complexParamContainer;
 
-    public FractalSettingsController(Fractal fractal) {
+    public FractalSettingsController(Fractal fractal, Action setOnFormSubmitted) {
+        super(setOnFormSubmitted);
         this.fractal = fractal;
     }
 
@@ -32,15 +34,8 @@ public class FractalSettingsController extends BaseController {
         fillForm();
     }
 
-    @FXML
-    private void applyAndClose() {
-        if (isSubmittingUnblocked()) {
-            readForm();
-            closeWindow();
-        }
-    }
-
-    private void setCorrectnessWatchers() {
+    @Override
+    protected void setCorrectnessWatchers() {
         createFormCorrectnessWatcher()
                 .registerFields(new DoubleValidator(), realPartField, imaginaryPartField)
                 .registerFields(new IntegerValidator(), iterationsField);
@@ -54,13 +49,15 @@ public class FractalSettingsController extends BaseController {
         }
     }
 
-    private void readForm() {
+    @Override
+    protected void readForm() {
         fractal.maxIter = readInteger(iterationsField);
         fractal.complexParamRe = readDouble(realPartField);
         fractal.complexParamIm = readDouble(imaginaryPartField);
     }
 
-    private void fillForm() {
+    @Override
+    protected void fillForm() {
         setText(realPartField, fractal.complexParamRe);
         setText(imaginaryPartField, fractal.complexParamIm);
         setText(iterationsField, fractal.maxIter);

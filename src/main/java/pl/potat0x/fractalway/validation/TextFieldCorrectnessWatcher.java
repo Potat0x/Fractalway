@@ -4,6 +4,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import pl.potat0x.fractalway.utils.Action;
 
 class TextFieldCorrectnessWatcher implements ChangeListener<String> {
     private final static String textFieldErrorStyle = "-fx-text-box-border: rgb(255,117,0); -fx-focus-color: rgb(255,117,0);";

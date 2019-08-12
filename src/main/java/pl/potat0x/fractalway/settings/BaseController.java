@@ -1,18 +1,33 @@
 package pl.potat0x.fractalway.settings;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.validation.TextFieldGroupCorrectnessWatcher;
 
-class BaseController {
+abstract class BaseController {
     private Node windowNode;
+    private final Action setOnFormSubmitted;
     private boolean isSubmittingBlocked;
 
     @FXML
     private Button okButton;
+
+    protected abstract void readForm();
+
+    protected abstract void fillForm();
+
+    protected abstract void setCorrectnessWatchers();
+
+    BaseController(Action setOnFormSubmitted) {
+        this.setOnFormSubmitted = setOnFormSubmitted != null ? setOnFormSubmitted : Action.EMPTY;
+    }
 
     void initialize(Node windowNode) {
         this.windowNode = windowNode;
@@ -25,8 +40,23 @@ class BaseController {
         window.close();
     }
 
-    boolean isSubmittingUnblocked() {
-        return !isSubmittingBlocked;
+    @FXML
+    protected void handleKeyEvent(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER && isSubmittingUnblocked()) {
+            readForm();
+            setOnFormSubmitted.execute();
+            if (keyEvent.isControlDown()) {
+                closeWindow();
+            }
+        }
+    }
+
+    @FXML
+    protected void handleOkButton(ActionEvent actionEvent) {
+        if (isSubmittingUnblocked()) {
+            readForm();
+            closeWindow();
+        }
     }
 
     TextFieldGroupCorrectnessWatcher createFormCorrectnessWatcher() {
@@ -47,6 +77,10 @@ class BaseController {
 
     int readInteger(TextField textField) {
         return Integer.parseInt(textField.getText());
+    }
+
+    private boolean isSubmittingUnblocked() {
+        return !isSubmittingBlocked;
     }
 
     private void setSubmittingBlocked(boolean blocked) {

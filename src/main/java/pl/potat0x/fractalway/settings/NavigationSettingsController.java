@@ -1,9 +1,9 @@
 package pl.potat0x.fractalway.settings;
 
-import pl.potat0x.fractalway.fractal.Fractal;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.validation.DoubleValidator;
 
 public class NavigationSettingsController extends BaseController {
@@ -20,30 +20,25 @@ public class NavigationSettingsController extends BaseController {
     @FXML
     private TextField positionStepField;
 
-    public NavigationSettingsController(Fractal fractal) {
+    public NavigationSettingsController(Fractal fractal, Action submitFormAction) {
+        super(submitFormAction);
         this.fractal = fractal;
     }
 
     @FXML
-    void initialize() {
+    private void initialize() {
         super.initialize(zoomField);
         setCorrectnessWatchers();
         fillForm();
     }
 
-    @FXML
-    private void applyAndClose(ActionEvent actionEvent) {
-        if (isSubmittingUnblocked()) {
-            readForm();
-            closeWindow();
-        }
-    }
-
-    private void setCorrectnessWatchers() {
+    @Override
+    protected void setCorrectnessWatchers() {
         createFormCorrectnessWatcher().registerFields(new DoubleValidator(), zoomField, positionXField, positionYField, zoomMultiplierField, positionStepField);
     }
 
-    private void readForm() {
+    @Override
+    protected void readForm() {
         fractal.zoom = readDouble(zoomField);
         fractal.posX = readDouble(positionXField);
         fractal.posY = readDouble(positionYField);
@@ -51,7 +46,8 @@ public class NavigationSettingsController extends BaseController {
         fractal.positionStep = readDouble(positionStepField);
     }
 
-    private void fillForm() {
+    @Override
+    protected void fillForm() {
         setText(zoomField, fractal.zoom);
         setText(positionXField, fractal.posX);
         setText(positionYField, fractal.posY);
