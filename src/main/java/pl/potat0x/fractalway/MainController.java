@@ -128,11 +128,14 @@ public class MainController {
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
             fractal = new Fractal(newType);
+            releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
         });
 
-        fractalGroup.getToggles().get(0).setSelected(true);
+        if (fractalGroup.getToggles().size() > 0) {
+            fractalGroup.getToggles().get(0).setSelected(true);
+        }
     }
 
     private void cudaPaint(double... fractalSpecificParams) {
@@ -142,6 +145,12 @@ public class MainController {
         long paintStart = System.currentTimeMillis();
         paintImageOnCanvas();
         System.out.println("paintImageOnCanvas: " + (System.currentTimeMillis() - paintStart) + "ms");
+    }
+
+    private void releaseFractalPainter() {
+        if (painter != null) {
+            painter.destroy();
+        }
     }
 
     private void drawFractal() {

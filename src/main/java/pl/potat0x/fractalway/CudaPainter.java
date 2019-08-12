@@ -24,6 +24,8 @@ class CudaPainter {
     private CUdeviceptr deviceOutputG;
     private CUdeviceptr deviceOutputB;
     private CUfunction function;
+    private CUmodule module;
+    private CUcontext context;
 
     CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName) {
         this.imageWidth = imageWidth;
@@ -65,10 +67,10 @@ class CudaPainter {
         CUdevice device = new CUdevice();
         cuDeviceGet(device, 0);
 
-        CUcontext context = new CUcontext();
+        context = new CUcontext();
         cuCtxCreate(context, 0, device);
 
-        CUmodule module = new CUmodule();
+        module = new CUmodule();
         cuModuleLoad(module, ptxFileName);
 
         function = new CUfunction();
@@ -80,6 +82,12 @@ class CudaPainter {
         cuMemAlloc(deviceOutputG, arraySizeInBytes);
         deviceOutputB = new CUdeviceptr();
         cuMemAlloc(deviceOutputB, arraySizeInBytes);
+    }
+
+    void destroy() {
+        memFree(deviceOutputR, deviceOutputG, deviceOutputB);
+        cuModuleUnload(module);
+        cuCtxDestroy(context);
     }
 
     private void memFree(CUdeviceptr... devicePtr) {
@@ -105,11 +113,5 @@ class CudaPainter {
             paramPointers.add(Pointer.to(new double[]{param}));
         }
         return Pointer.to(paramPointers.toArray(new Pointer[0]));
-    }
-
-    @Override //todo: finalize is deprecated since Java 9
-    protected void finalize() throws Throwable {
-        memFree(deviceOutputR, deviceOutputG, deviceOutputB);
-        super.finalize();
     }
 }
