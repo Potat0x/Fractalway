@@ -38,7 +38,7 @@ public class FractalSettingsController extends BaseController {
     protected void setCorrectnessWatchers() {
         createFormCorrectnessWatcher()
                 .registerFields(new DoubleValidator(), realPartField, imaginaryPartField)
-                .registerFields(new IntegerValidator(), iterationsField);
+                .registerFields(new IntegerValidator(Fractal.MIN_ITER, Fractal.MAX_ITER), iterationsField);
     }
 
     private void configureForm() {
@@ -51,7 +51,7 @@ public class FractalSettingsController extends BaseController {
 
     @Override
     protected void readForm() {
-        fractal.maxIter = readInteger(iterationsField);
+        fractal.iterations = readInteger(iterationsField);
         fractal.complexParamRe = readDouble(realPartField);
         fractal.complexParamIm = readDouble(imaginaryPartField);
     }
@@ -60,6 +60,6 @@ public class FractalSettingsController extends BaseController {
     protected void fillForm() {
         setText(realPartField, fractal.complexParamRe);
         setText(imaginaryPartField, fractal.complexParamIm);
-        setText(iterationsField, fractal.maxIter);
+        setText(iterationsField, fractal.iterations);
     }
 }

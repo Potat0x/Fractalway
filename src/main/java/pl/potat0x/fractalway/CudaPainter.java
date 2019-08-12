@@ -101,7 +101,7 @@ class CudaPainter {
                 Pointer.to(new double[]{fractal.zoom}),
                 Pointer.to(new double[]{fractal.posX}),
                 Pointer.to(new double[]{fractal.posY}),
-                Pointer.to(new int[]{fractal.maxIter}),
+                Pointer.to(new int[]{fractal.iterations}),
                 Pointer.to(new int[]{imageWidth}),
                 Pointer.to(new int[]{imageHeight}),
                 Pointer.to(deviceOutputR),

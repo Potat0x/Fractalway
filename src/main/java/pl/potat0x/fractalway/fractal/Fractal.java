@@ -1,8 +1,11 @@
 package pl.potat0x.fractalway.fractal;
 
 public class Fractal {
+    public static final int MIN_ITER = 1;
+    public static final int MAX_ITER = 2000;
+
     public final FractalType type;
-    public int maxIter = 200;
+    public int iterations = 160;
 
     public double posX = 0;
     public double posY = 0;
