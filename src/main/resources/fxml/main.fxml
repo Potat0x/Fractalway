@@ -24,6 +24,11 @@
             <MenuBar>
                <menus>
                   <Menu fx:id="fractalMenu" mnemonicParsing="false" text="Fractal" />
+                  <Menu mnemonicParsing="false" text="View">
+                     <items>
+                        <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />
+                     </items>
+                  </Menu>
                   <Menu fx:id="settingsMenu" mnemonicParsing="false" text="Settings">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Fractal" />

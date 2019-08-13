@@ -2,7 +2,12 @@ package pl.potat0x.fractalway;
 
 import jcuda.Pointer;
 import jcuda.Sizeof;
-import jcuda.driver.*;
+import jcuda.driver.CUcontext;
+import jcuda.driver.CUdevice;
+import jcuda.driver.CUdeviceptr;
+import jcuda.driver.CUfunction;
+import jcuda.driver.CUmodule;
+import jcuda.driver.JCudaDriver;
 import jcuda.runtime.dim3;
 import pl.potat0x.fractalway.fractal.Fractal;
 

@@ -1,31 +1,32 @@
 package pl.potat0x.fractalway;
 
-import pl.potat0x.fractalway.fractal.Fractal;
-import pl.potat0x.fractalway.fractal.FractalType;
-import pl.potat0x.fractalway.settings.FractalSettingsController;
-import pl.potat0x.fractalway.settings.NavigationSettingsController;
-import pl.potat0x.fractalway.utils.WindowBuilder;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Menu;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
+import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.fractal.FractalType;
+import pl.potat0x.fractalway.settings.FractalSettingsController;
+import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.StringCapitalizer;
+import pl.potat0x.fractalway.utils.WindowBuilder;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
+import static io.vavr.Predicates.isIn;
 
 public class MainController {
     private final int CANVAS_WIDTH = 800;
@@ -40,12 +41,12 @@ public class MainController {
 
     @FXML
     private Canvas canvas;
-
     @FXML
     private Menu fractalMenu;
-
     @FXML
     private Menu settingsMenu;
+    @FXML
+    private Menu canvasCursorMenu;
 
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
@@ -59,6 +60,7 @@ public class MainController {
     private void initialize() {
         initCanvas();
         initFractalMenu();
+        initCursorMenu();
 //        drawPattern();
         drawFractal();
     }
@@ -117,15 +119,24 @@ public class MainController {
         canvas.setFocusTraversable(true);
     }
 
+    private void initCursorMenu() {
+        ToggleGroup cursorGroup = new ToggleGroup();
+        List<MenuItem> menuItems = addItemsToToggleGroup(cursorGroup, Cursor.DEFAULT, Cursor.CROSSHAIR, Cursor.NONE);
+        canvasCursorMenu.getItems().addAll(menuItems);
+
+        cursorGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            Cursor cursor = (Cursor) newValue.getUserData();
+            Match(cursor).of(
+                    Case($(isIn(Cursor.CROSSHAIR, Cursor.NONE)), o -> run(() -> canvas.setCursor(cursor))),
+                    Case($(), o -> run(() -> canvas.setCursor(Cursor.DEFAULT)))
+            );
+        });
+    }
+
     private void initFractalMenu() {
         ToggleGroup fractalGroup = new ToggleGroup();
-
-        for (FractalType type : FractalType.values()) {
-            RadioMenuItem menuItem = new RadioMenuItem(type.toString());
-            menuItem.setToggleGroup(fractalGroup);
-            menuItem.setUserData(type);
-            fractalMenu.getItems().add(menuItem);
-        }
+        List<MenuItem> menuItems = addItemsToToggleGroup(fractalGroup, (Object[]) FractalType.values());
+        fractalMenu.getItems().addAll(menuItems);
 
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
@@ -138,6 +149,17 @@ public class MainController {
         if (fractalGroup.getToggles().size() > 0) {
             fractalGroup.getToggles().get(0).setSelected(true);
         }
+    }
+
+    private List<MenuItem> addItemsToToggleGroup(ToggleGroup group, Object... items) {
+        List<MenuItem> menuItems = new ArrayList<>();
+        for (Object type : items) {
+            RadioMenuItem menuItem = new RadioMenuItem(StringCapitalizer.capitalizeFirstLetter(type.toString().toLowerCase()));
+            menuItem.setToggleGroup(group);
+            menuItem.setUserData(type);
+            menuItems.add(menuItem);
+        }
+        return menuItems;
     }
 
     private void cudaPaint(double... fractalSpecificParams) {
