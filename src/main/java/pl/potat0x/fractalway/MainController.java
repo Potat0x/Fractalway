@@ -2,6 +2,7 @@ package pl.potat0x.fractalway;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -47,6 +48,10 @@ public class MainController {
     private Menu settingsMenu;
     @FXML
     private Menu canvasCursorMenu;
+    @FXML
+    private Label deviceInfoLabel;
+    @FXML
+    private CheckMenuItem deviceInfoMenuItem;
 
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
@@ -60,8 +65,10 @@ public class MainController {
     private void initialize() {
         initCanvas();
         initFractalMenu();
+        drawPattern();
         initCursorMenu();
-//        drawPattern();
+        initDeviceInfoLabel();
+        initDeviceInfoMenuItem();
         drawFractal();
     }
 
@@ -149,6 +156,20 @@ public class MainController {
         if (fractalGroup.getToggles().size() > 0) {
             fractalGroup.getToggles().get(0).setSelected(true);
         }
+    }
+
+    private void initDeviceInfoLabel() {
+        CudaDeviceInfo devInfo = new CudaDeviceInfo(0);
+        String text = devInfo.name() +
+                "\nCUDA version: " + devInfo.cudaVersion() +
+                "\nCompute capability: " + devInfo.computeCapability() +
+                "\nMemory: " + devInfo.freeAndTotalMemoryInBytes()._2 / (1024 * 1024) + " MB";
+        Platform.runLater(() -> deviceInfoLabel.setText(text));
+    }
+
+    private void initDeviceInfoMenuItem() {
+        deviceInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> deviceInfoLabel.setVisible(newValue));
+        deviceInfoMenuItem.selectedProperty().set(true);
     }
 
     private List<MenuItem> addItemsToToggleGroup(ToggleGroup group, Object... items) {
