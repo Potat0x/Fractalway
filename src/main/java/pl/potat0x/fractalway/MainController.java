@@ -11,7 +11,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.input.*;
-import javafx.scene.paint.Color;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
@@ -233,7 +232,7 @@ public class MainController {
         PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
         for (int y = 0; y < CANVAS_HEIGHT; y++) {
             for (int x = 0; x < CANVAS_WIDTH; x++) {
-                pixelWriter.setColor(x, y, createColor(x, y));
+                pixelWriter.setArgb(x, y, createColorArgb(x, y));
             }
         }
     }
@@ -251,17 +250,19 @@ public class MainController {
         paintImageOnCanvas();
     }
 
-    private Color createColor(int x, int y) {
+    private int createColorArgb(int x, int y) {
         int index = calculateIndex(x, y);
-        double r = red[index] / 255.0;
-        double g = green[index] / 255.0;
-        double b = blue[index] / 255.0;
-
+        int r, g, b;
         if (invertFractalColors) {
-            return new Color(1.0 - r, 1.0 - g, 1.0 - b, 1);
+            r = 255 - red[index];
+            g = 255 - green[index];
+            b = 255 - blue[index];
         } else {
-            return new Color(r, g, b, 1);
+            r = red[index];
+            g = green[index];
+            b = blue[index];
         }
+        return (255 << 24) | (r << 16) | (g << 8) | b;
     }
 
     private int calculateIndex(int x, int y) {
