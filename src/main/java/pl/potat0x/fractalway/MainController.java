@@ -39,6 +39,7 @@ public class MainController {
     private final PatternPainter patternPainter;
     private Fractal fractal;
     private CudaPainter painter;
+    private boolean invertFractalColors;
 
     @FXML
     private Canvas canvas;
@@ -52,6 +53,8 @@ public class MainController {
     private Label deviceInfoLabel;
     @FXML
     private CheckMenuItem deviceInfoMenuItem;
+    @FXML
+    private CheckMenuItem invertColorsMenuItem;
 
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
@@ -59,16 +62,18 @@ public class MainController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
+        invertFractalColors = false;
     }
 
     @FXML
     private void initialize() {
         initCanvas();
-        initFractalMenu();
         drawPattern();
+        initFractalMenu();
         initCursorMenu();
         initDeviceInfoLabel();
         initDeviceInfoMenuItem();
+        initInvertColorsMenuItem();
         drawFractal();
     }
 
@@ -172,6 +177,13 @@ public class MainController {
         deviceInfoMenuItem.selectedProperty().set(true);
     }
 
+    private void initInvertColorsMenuItem() {
+        invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            invertFractalColors = newValue;
+            drawFractal();
+        });
+    }
+
     private List<MenuItem> addItemsToToggleGroup(ToggleGroup group, Object... items) {
         List<MenuItem> menuItems = new ArrayList<>();
         for (Object type : items) {
@@ -244,7 +256,12 @@ public class MainController {
         double r = red[index] / 255.0;
         double g = green[index] / 255.0;
         double b = blue[index] / 255.0;
-        return new Color(r, g, b, 1);
+
+        if (invertFractalColors) {
+            return new Color(1.0 - r, 1.0 - g, 1.0 - b, 1);
+        } else {
+            return new Color(r, g, b, 1);
+        }
     }
 
     private int calculateIndex(int x, int y) {

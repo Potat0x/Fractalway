@@ -37,6 +37,7 @@
                <items>
                   <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />
                   <CheckMenuItem fx:id="deviceInfoMenuItem" mnemonicParsing="false" text="Device info" />
+                  <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
                </items>
             </Menu>
             <Menu fx:id="settingsMenu" mnemonicParsing="false" text="Settings">
