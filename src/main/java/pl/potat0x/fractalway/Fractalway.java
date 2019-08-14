@@ -6,7 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+import static jcuda.driver.JCudaDriver.cuInit;
+import static jcuda.nvrtc.JNvrtc.setExceptionsEnabled;
+
+public class Fractalway extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -17,6 +20,12 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        initCuda();
         launch(args);
+    }
+
+    private static void initCuda() {
+        setExceptionsEnabled(true);
+        cuInit(0);
     }
 }

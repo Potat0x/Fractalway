@@ -66,9 +66,6 @@ class CudaPainter {
     }
 
     private void prepareCuda() {
-        JCudaDriver.setExceptionsEnabled(true);
-        cuInit(0);
-
         CUdevice device = new CUdevice();
         cuDeviceGet(device, 0);
 
