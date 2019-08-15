@@ -2,7 +2,6 @@ package pl.potat0x.fractalway;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.Tuple3;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -85,6 +84,11 @@ public class MainController {
         initDeviceInfoMenuItem();
         initEventInfoMenuItem();
         initInvertColorsMenuItem();
+
+        memcpyTotalTime = 0;
+        memcpysCount = 0;
+        memcpyMinTime = Float.POSITIVE_INFINITY;
+        memcpyMaxTime = Float.NEGATIVE_INFINITY;
     }
 
     @FXML
@@ -210,10 +214,25 @@ public class MainController {
         return menuItems;
     }
 
+    float memcpyTotalTime = 0;
+    int memcpysCount = 0;
+    float memcpyMinTime = Float.POSITIVE_INFINITY;
+    float memcpyMaxTime = Float.NEGATIVE_INFINITY;
+
     private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
-        Tuple2<Float, Float> eventInfo = painter.paint(red, green, blue, fractal, fractalSpecificParams);
-        System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
-        return eventInfo;
+        for (int i = 0; i < 100; i++) {
+            Tuple2<Float, Float> eventInfo = painter.paint(red, green, blue, fractal, fractalSpecificParams);
+            System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
+
+            memcpyTotalTime += eventInfo._2;
+            memcpysCount++;
+            System.out.println("memcpy: count = " + memcpysCount + ", avg time = " + (memcpyTotalTime / memcpysCount) + " ms");
+            memcpyMinTime = Math.min(memcpyMinTime, eventInfo._2);
+            memcpyMaxTime = Math.max(memcpyMaxTime, eventInfo._2);
+            System.out.println("memcpy: min = " + memcpyMinTime + " ms, max = " + memcpyMaxTime + " ms");
+        }
+
+        return Tuple.of(0f, 0f);
     }
 
     private void refreshEventLabel(Tuple2<Float, Float> paintTimeInfo) {
