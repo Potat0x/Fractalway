@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.input.*;
 import pl.potat0x.fractalway.fractal.Fractal;
@@ -22,6 +23,7 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.nio.IntBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class MainController {
     private final PatternPainter patternPainter;
     private Fractal fractal;
     private CudaPainter painter;
+    private PixelFormat<IntBuffer> pixelFormat;
     private boolean invertFractalColors;
     private DecimalFormat df;
 
@@ -63,6 +66,7 @@ public class MainController {
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.argb = new int[arraySize];
+        pixelFormat = PixelFormat.getIntArgbPreInstance();
         patternPainter = new PatternPainter(CANVAS_WIDTH, argb);
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
@@ -85,6 +89,8 @@ public class MainController {
         memcpysCount = 0;
         memcpyMinTime = Float.POSITIVE_INFINITY;
         memcpyMaxTime = Float.NEGATIVE_INFINITY;
+        canvasPaintTotalTime = 0;
+        canvasPaintCount = 0;
     }
 
     @FXML
@@ -216,7 +222,7 @@ public class MainController {
     float memcpyMaxTime = Float.NEGATIVE_INFINITY;
 
     private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal, fractalSpecificParams);
             System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
 
@@ -244,12 +250,21 @@ public class MainController {
         }
     }
 
+    long canvasPaintTotalTime = 0;
+    int canvasPaintCount = 0;
+
     private void drawFractal() {
         Tuple2<Float, Float> timeInfo = cudaPaint(getFractalParams());
-        long paintStart = System.currentTimeMillis();
-        paintImageOnCanvas();
-        long paintEnd = System.currentTimeMillis() - paintStart;
-        System.out.println("paintImageOnCanvas: " + paintEnd + " ms");
+
+        for (int i = 0; i < 100; i++) {
+            long paintStart = System.nanoTime();
+            paintImageOnCanvas();
+            long paintEnd = System.nanoTime() - paintStart;
+            System.out.println("paintImageOnCanvas: " + paintEnd / 1000.0 + " ms");
+            canvasPaintCount++;
+            canvasPaintTotalTime += paintEnd;
+        }
+        System.out.println("paintImageOnCanvas: count = " + canvasPaintCount + ", avg time = " + (canvasPaintTotalTime / canvasPaintCount) / 1000000.0 + " ms");
         refreshEventLabel(timeInfo);
     }
 
@@ -272,9 +287,10 @@ public class MainController {
         PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
         for (int y = 0; y < CANVAS_HEIGHT; y++) {
             for (int x = 0; x < CANVAS_WIDTH; x++) {
-                pixelWriter.setArgb(x, y, createColorArgb(x, y));
+                argb[y * CANVAS_WIDTH + x] = createColorArgb(x, y);
             }
         }
+        pixelWriter.setPixels(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, pixelFormat, argb, 0, CANVAS_WIDTH);
     }
 
     private void loadPattern() {
@@ -292,17 +308,8 @@ public class MainController {
 
     private int createColorArgb(int x, int y) {
         int index = calculateIndex(x, y);
-        int r, g, b;
-        if (invertFractalColors) {
-            r = 255 - (argb[index] >> 16);
-            g = 255 - (argb[index] >> 8);
-            b = 255 - argb[index];
-        } else {
-            r = (argb[index] >> 16);
-            g = (argb[index] >> 8);
-            b = argb[index];
-        }
-        return (255 << 24) | (r << 16) | (g << 8) | b;
+        //todo: fix color inverting
+        return argb[index];
     }
 
     private int calculateIndex(int x, int y) {
