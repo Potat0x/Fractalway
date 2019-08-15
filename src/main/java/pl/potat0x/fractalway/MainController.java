@@ -64,6 +64,7 @@ public class MainController {
     private CheckMenuItem eventInfoMenuItem;
 
     public MainController() {
+        fractal = new Fractal(FractalType.MANDELBROT_SET);
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
         this.argb = new int[arraySize];
         pixelFormat = PixelFormat.getIntArgbPreInstance();
@@ -256,7 +257,7 @@ public class MainController {
     private void drawFractal() {
         Tuple2<Float, Float> timeInfo = cudaPaint(getFractalParams());
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             long paintStart = System.nanoTime();
             paintImageOnCanvas();
             long paintEnd = System.nanoTime() - paintStart;
@@ -308,8 +309,17 @@ public class MainController {
 
     private int createColorArgb(int x, int y) {
         int index = calculateIndex(x, y);
-        //todo: fix color inverting
-        return argb[index];
+        int r = (argb[index]) >>> 16;
+        int g = (argb[index] << 8) >>> 16;
+        int b = (argb[index] << 16) >>> 16;
+
+        if (invertFractalColors) {
+            r = 255 - r;
+            g = 255 - g;
+            b = 255 - b;
+        }
+
+        return (255 << 24) | (r << 16) | (g << 8) | b;
     }
 
     private int calculateIndex(int x, int y) {
