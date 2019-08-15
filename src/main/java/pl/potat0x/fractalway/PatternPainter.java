@@ -1,15 +1,11 @@
 package pl.potat0x.fractalway;
 
 class PatternPainter {
-    private final int[] red;
-    private final int[] green;
-    private final int[] blue;
+    private final int[] argb;
     private final int canvasWidth;
 
-    PatternPainter(int canvasWidth, int[] red, int[] green, int[] blue) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
+    PatternPainter(int canvasWidth, int[] argb) {
+        this.argb = argb;
         this.canvasWidth = canvasWidth;
     }
 
@@ -19,24 +15,29 @@ class PatternPainter {
 
     void gradient(int x, int y) {
         int index = calculateIndex(x, y);
-        red[index] = scaleTo255(x);
-        green[index] = scaleTo255(y);
-        blue[index] = 0;
+        argb[index] = argb(scaleTo255(x), scaleTo255(y), 0);
     }
 
     void diagonalStripes(int x, int y) {
         int index = calculateIndex(x, y);
         float mn = (float) ((x + y) % 33 < 15 ? 0.5 : 0.9);
-        red[index] = (int) (44 * mn);
-        green[index] = (int) (44 * mn);
-        blue[index] = (int) (44 * mn);
+        argb[index] = argb((int) (44 * mn));
     }
 
     void colorfulStripesAndCircles(int x, int y) {
         int index = calculateIndex(x, y);
-        red[index] = ((x * y) % 50) * 4;
-        green[index] = ((x + y) % 30) * 7;
-        blue[index] = ((x + y) % 13) * 17;
+        argb[index] = argb(
+                ((x * y) % 50) * 4,
+                ((x + y) % 30) * 7,
+                ((x + y) % 13) * 17);
+    }
+
+    private int argb(int color) {
+        return (255 << 24) | (color << 16) | (color << 8) | color;
+    }
+
+    private int argb(int r, int g, int b) {
+        return (255 << 24) | (r << 16) | (g << 8) | b;
     }
 
     private int calculateIndex(int x, int y) {

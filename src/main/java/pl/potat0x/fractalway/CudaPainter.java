@@ -7,7 +7,6 @@ import jcuda.Sizeof;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.CUdeviceptr;
-import jcuda.driver.CUevent;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
 import jcuda.runtime.dim3;
@@ -18,9 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static jcuda.driver.CUevent_flags.CU_EVENT_DEFAULT;
 import static jcuda.driver.JCudaDriver.*;
-import static jcuda.runtime.JCuda.cudaDeviceSynchronize;
 
 class CudaPainter {
     private final int imageWidth;
@@ -29,9 +26,7 @@ class CudaPainter {
     private final String ptxFileName;
     private final String functionName;
     private final int threadsPerBlock;
-    private CUdeviceptr deviceOutputR;
-    private CUdeviceptr deviceOutputG;
-    private CUdeviceptr deviceOutputB;
+    private CUdeviceptr deviceOutputArgb;
     private CUfunction function;
     private CUmodule module;
     private CUcontext context;
@@ -46,7 +41,7 @@ class CudaPainter {
         prepareCuda();
     }
 
-    Tuple2<Float, Float> paint(int[] red, int[] green, int[] blue, Fractal fractal, double... fractalSpecificParams) {
+    Tuple2<Float, Float> paint(int[] argb, Fractal fractal, double... fractalSpecificParams) {
         Pointer kernelParameters = prepareKernelParams(fractal, fractalSpecificParams);
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
@@ -66,9 +61,7 @@ class CudaPainter {
         float kernelTime = cudaClock.stop();
 
         cudaClock.start();
-        cuMemcpyDtoH(Pointer.to(red), deviceOutputR, arraySizeInBytes);
-        cuMemcpyDtoH(Pointer.to(green), deviceOutputG, arraySizeInBytes);
-        cuMemcpyDtoH(Pointer.to(blue), deviceOutputB, arraySizeInBytes);
+        cuMemcpyDtoH(Pointer.to(argb), deviceOutputArgb, arraySizeInBytes);
         float memcpyTime = cudaClock.stop();
 
         cudaClock.destroy();
@@ -88,24 +81,14 @@ class CudaPainter {
         function = new CUfunction();
         cuModuleGetFunction(function, module, functionName);
 
-        deviceOutputR = new CUdeviceptr();
-        cuMemAlloc(deviceOutputR, arraySizeInBytes);
-        deviceOutputG = new CUdeviceptr();
-        cuMemAlloc(deviceOutputG, arraySizeInBytes);
-        deviceOutputB = new CUdeviceptr();
-        cuMemAlloc(deviceOutputB, arraySizeInBytes);
+        deviceOutputArgb = new CUdeviceptr();
+        cuMemAlloc(deviceOutputArgb, arraySizeInBytes);
     }
 
     void destroy() {
-        memFree(deviceOutputR, deviceOutputG, deviceOutputB);
+        cuMemFree(deviceOutputArgb);
         cuModuleUnload(module);
         cuCtxDestroy(context);
-    }
-
-    private void memFree(CUdeviceptr... devicePtr) {
-        for (CUdeviceptr devptr : devicePtr) {
-            cuMemFree(devptr);
-        }
     }
 
     private Pointer prepareKernelParams(Fractal fractal, double... fractalSpecificParams) {
@@ -116,9 +99,7 @@ class CudaPainter {
                 Pointer.to(new int[]{fractal.iterations}),
                 Pointer.to(new int[]{imageWidth}),
                 Pointer.to(new int[]{imageHeight}),
-                Pointer.to(deviceOutputR),
-                Pointer.to(deviceOutputG),
-                Pointer.to(deviceOutputB)
+                Pointer.to(deviceOutputArgb)
         ));
 
         for (double param : fractalSpecificParams) {

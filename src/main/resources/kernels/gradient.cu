@@ -1,27 +1,27 @@
 extern "C"
-__global__ void gradient(double zoom, double startX, double startY, int maxIter, int* r, int* g, int* b)
+__global__ void gradient(double zoom, double posX, double posY, int maxIter, int width, int height, int* argb)
 {
-    const int wh = 512;
-
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int idx = y * width + x;
 
-    if(x >= wh || y >= wh){
+    if(x >= width || y >= height){
         return;
     }
 
-    float centerDist = hypotf(wh/2 - x, wh/2 - y);
+    float centerDist = hypotf(width/2 - x, height/2 - y);
     if(centerDist > 255){
         centerDist = 255.0;
     }
 
-    double rgbScale = 255.0/wh;
+    double rgbScale = 255.0/width;
 
     if(threadIdx.x == 0 || threadIdx.y == 0){
         rgbScale *= 0.8;
     }
 
-    r[y*wh+x] = x*rgbScale;
-    g[y*wh+x] = y*rgbScale;
-    b[y*wh+x] = centerDist*rgbScale*0.5;
+    int r = x*rgbScale;
+    int g = y*rgbScale;
+    int b = centerDist*rgbScale*0.5;
+    argb[idx] = (255<<24) | (r<<16) | (g<<8) | b;
 }

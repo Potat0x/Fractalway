@@ -20,16 +20,14 @@
 	.param .u32 juliaSet_param_4,
 	.param .u32 juliaSet_param_5,
 	.param .u64 juliaSet_param_6,
-	.param .u64 juliaSet_param_7,
-	.param .u64 juliaSet_param_8,
-	.param .f64 juliaSet_param_9,
-	.param .f64 juliaSet_param_10
+	.param .f64 juliaSet_param_7,
+	.param .f64 juliaSet_param_8
 )
 {
 	.reg .pred 	%p<6>;
-	.reg .b32 	%r<21>;
+	.reg .b32 	%r<26>;
 	.reg .f64 	%fd<40>;
-	.reg .b64 	%rd<11>;
+	.reg .b64 	%rd<5>;
 
 
 	ld.param.f64 	%fd7, [juliaSet_param_0];
@@ -38,11 +36,9 @@
 	ld.param.u32 	%r7, [juliaSet_param_3];
 	ld.param.u32 	%r8, [juliaSet_param_4];
 	ld.param.u32 	%r9, [juliaSet_param_5];
-	ld.param.u64 	%rd4, [juliaSet_param_6];
-	ld.param.u64 	%rd5, [juliaSet_param_7];
-	ld.param.u64 	%rd6, [juliaSet_param_8];
-	ld.param.f64 	%fd10, [juliaSet_param_9];
-	ld.param.f64 	%fd11, [juliaSet_param_10];
+	ld.param.u64 	%rd2, [juliaSet_param_6];
+	ld.param.f64 	%fd10, [juliaSet_param_7];
+	ld.param.f64 	%fd11, [juliaSet_param_8];
 	mov.u32 	%r10, %ntid.y;
 	mov.u32 	%r11, %ctaid.y;
 	mov.u32 	%r12, %tid.y;
@@ -56,9 +52,7 @@
 	or.pred  	%p3, %p1, %p2;
 	@%p3 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd1, %rd6;
-	cvta.to.global.u64 	%rd2, %rd5;
-	cvta.to.global.u64 	%rd3, %rd4;
+	cvta.to.global.u64 	%rd1, %rd2;
 	mad.lo.s32 	%r3, %r1, %r8, %r2;
 	cvt.rn.f64.s32	%fd12, %r2;
 	cvt.rn.f64.s32	%fd13, %r8;
@@ -71,11 +65,11 @@
 	sub.f64 	%fd19, %fd18, %fd17;
 	fma.rn.f64 	%fd39, %fd19, %fd7, %fd9;
 	add.s32 	%r4, %r7, -1;
-	mov.u32 	%r20, 0;
+	mov.u32 	%r25, 0;
 
 BB0_2:
-	add.s32 	%r6, %r20, 1;
-	setp.ge.s32	%p4, %r20, %r4;
+	add.s32 	%r6, %r25, 1;
+	setp.ge.s32	%p4, %r25, %r4;
 	@%p4 bra 	BB0_4;
 
 	mul.f64 	%fd20, %fd38, %fd38;
@@ -88,7 +82,7 @@ BB0_2:
 	fma.rn.f64 	%fd25, %fd39, %fd39, %fd24;
 	setp.leu.f64	%p5, %fd25, 0d4010000000000000;
 	mov.f64 	%fd38, %fd5;
-	mov.u32 	%r20, %r6;
+	mov.u32 	%r25, %r6;
 	@%p5 bra 	BB0_2;
 
 BB0_4:
@@ -102,18 +96,19 @@ BB0_4:
 	div.rn.f64 	%fd33, %fd32, 0d406FE00000000000;
 	mul.f64 	%fd34, %fd33, 0d4031000000000000;
 	cvt.rzi.s32.f64	%r17, %fd34;
-	mul.wide.s32 	%rd7, %r3, 4;
-	add.s64 	%rd8, %rd3, %rd7;
-	st.global.u32 	[%rd8], %r17;
 	div.rn.f64 	%fd35, %fd29, 0d406FE00000000000;
 	mul.f64 	%fd36, %fd35, 0d406FE00000000000;
 	cvt.rzi.s32.f64	%r18, %fd36;
-	add.s64 	%rd9, %rd2, %rd7;
-	st.global.u32 	[%rd9], %r18;
 	mul.f64 	%fd37, %fd33, 0d4040800000000000;
 	cvt.rzi.s32.f64	%r19, %fd37;
-	add.s64 	%rd10, %rd1, %rd7;
-	st.global.u32 	[%rd10], %r19;
+	shl.b32 	%r20, %r17, 16;
+	shl.b32 	%r21, %r18, 8;
+	or.b32  	%r22, %r20, %r21;
+	or.b32  	%r23, %r22, %r19;
+	or.b32  	%r24, %r23, -16777216;
+	mul.wide.s32 	%rd3, %r3, 4;
+	add.s64 	%rd4, %rd1, %rd3;
+	st.global.u32 	[%rd4], %r24;
 
 BB0_5:
 	ret;

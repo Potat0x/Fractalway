@@ -1,5 +1,5 @@
 extern "C"
-__global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int width, int height, int* r, int* g, int* b, double cRe, double cIm)
+__global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int width, int height, int* argb, double cRe, double cIm)
 {
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -35,7 +35,8 @@ __global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int
     }
 
     double color = (255.0*i)/(1.0*maxIter);
-    r[idx] = 17.0*(abs(255-color)/255.0);
-    g[idx] = 255.0*(color/255.0);
-    b[idx] = 33.0*(abs(255-color)/255.0);
+    int r = 17.0*(abs(255-color)/255.0);
+    int g = 255.0*(color/255.0);
+    int b = 33.0*(abs(255-color)/255.0);
+    argb[idx] = (255<<24) | (r<<16) | (g<<8) | b;
 }

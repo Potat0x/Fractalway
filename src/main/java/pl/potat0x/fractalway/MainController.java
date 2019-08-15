@@ -33,9 +33,7 @@ import static io.vavr.Predicates.isIn;
 public class MainController {
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
-    private final int[] red;
-    private final int[] green;
-    private final int[] blue;
+    private final int[] argb;
 
     private final PatternPainter patternPainter;
     private Fractal fractal;
@@ -64,10 +62,8 @@ public class MainController {
 
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
-        this.red = new int[arraySize];
-        this.green = new int[arraySize];
-        this.blue = new int[arraySize];
-        patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
+        this.argb = new int[arraySize];
+        patternPainter = new PatternPainter(CANVAS_WIDTH, argb);
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
         df.setMinimumFractionDigits(2);
@@ -221,7 +217,7 @@ public class MainController {
 
     private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
         for (int i = 0; i < 100; i++) {
-            Tuple2<Float, Float> eventInfo = painter.paint(red, green, blue, fractal, fractalSpecificParams);
+            Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal, fractalSpecificParams);
             System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
 
             memcpyTotalTime += eventInfo._2;
@@ -298,13 +294,13 @@ public class MainController {
         int index = calculateIndex(x, y);
         int r, g, b;
         if (invertFractalColors) {
-            r = 255 - red[index];
-            g = 255 - green[index];
-            b = 255 - blue[index];
+            r = 255 - (argb[index] >> 16);
+            g = 255 - (argb[index] >> 8);
+            b = 255 - argb[index];
         } else {
-            r = red[index];
-            g = green[index];
-            b = blue[index];
+            r = (argb[index] >> 16);
+            g = (argb[index] >> 8);
+            b = argb[index];
         }
         return (255 << 24) | (r << 16) | (g << 8) | b;
     }
