@@ -2,6 +2,7 @@ package pl.potat0x.fractalway;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +22,8 @@ import pl.potat0x.fractalway.utils.WindowBuilder;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +42,7 @@ public class MainController {
     private Fractal fractal;
     private CudaPainter painter;
     private boolean invertFractalColors;
+    private DecimalFormat df;
 
     @FXML
     private Canvas canvas;
@@ -51,9 +55,13 @@ public class MainController {
     @FXML
     private Label deviceInfoLabel;
     @FXML
+    private Label eventInfoLabel;
+    @FXML
     private CheckMenuItem deviceInfoMenuItem;
     @FXML
     private CheckMenuItem invertColorsMenuItem;
+    @FXML
+    private CheckMenuItem eventInfoMenuItem;
 
     public MainController() {
         int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
@@ -61,6 +69,9 @@ public class MainController {
         this.green = new int[arraySize];
         this.blue = new int[arraySize];
         patternPainter = new PatternPainter(CANVAS_WIDTH, red, green, blue);
+        df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        df.setMinimumFractionDigits(2);
         invertFractalColors = false;
     }
 
@@ -72,8 +83,8 @@ public class MainController {
         initCursorMenu();
         initDeviceInfoLabel();
         initDeviceInfoMenuItem();
+        initEventInfoMenuItem();
         initInvertColorsMenuItem();
-        drawFractal();
     }
 
     @FXML
@@ -176,6 +187,11 @@ public class MainController {
         deviceInfoMenuItem.selectedProperty().set(true);
     }
 
+    private void initEventInfoMenuItem() {
+        eventInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> eventInfoLabel.setVisible(newValue));
+        eventInfoMenuItem.selectedProperty().set(true);
+    }
+
     private void initInvertColorsMenuItem() {
         invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             invertFractalColors = newValue;
@@ -194,13 +210,17 @@ public class MainController {
         return menuItems;
     }
 
-    private void cudaPaint(double... fractalSpecificParams) {
-        long cudaStart = System.currentTimeMillis();
-        painter.paint(red, green, blue, fractal, fractalSpecificParams);
-        System.out.println("cudaPaint (" + (System.currentTimeMillis() - cudaStart) + "ms): " + fractal.getViewAsString());
-        long paintStart = System.currentTimeMillis();
-        paintImageOnCanvas();
-        System.out.println("paintImageOnCanvas: " + (System.currentTimeMillis() - paintStart) + "ms");
+    private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
+        Tuple2<Float, Float> eventInfo = painter.paint(red, green, blue, fractal, fractalSpecificParams);
+        System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
+        return eventInfo;
+    }
+
+    private void refreshEventLabel(Tuple2<Float, Float> paintTimeInfo) {
+        String text = "Kernel time: " + df.format(paintTimeInfo._1) + " ms" +
+                "\nMemcpy time: " + df.format(paintTimeInfo._2) + " ms" +
+                "\nTotal: " + df.format(paintTimeInfo._1 + paintTimeInfo._2) + " ms";
+        eventInfoLabel.setText(text);
     }
 
     private void releaseFractalPainter() {
@@ -210,7 +230,12 @@ public class MainController {
     }
 
     private void drawFractal() {
-        cudaPaint(getFractalParams());
+        Tuple2<Float, Float> timeInfo = cudaPaint(getFractalParams());
+        long paintStart = System.currentTimeMillis();
+        paintImageOnCanvas();
+        long paintEnd = System.currentTimeMillis() - paintStart;
+        System.out.println("paintImageOnCanvas: " + paintEnd + " ms");
+        refreshEventLabel(timeInfo);
     }
 
     private double[] getFractalParams() {

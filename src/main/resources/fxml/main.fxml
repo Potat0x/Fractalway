@@ -37,6 +37,7 @@
                <items>
                   <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />
                   <CheckMenuItem fx:id="deviceInfoMenuItem" mnemonicParsing="false" text="Device info" />
+                  <CheckMenuItem fx:id="eventInfoMenuItem" mnemonicParsing="false" text="Event info" />
                   <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
                </items>
             </Menu>
@@ -48,5 +49,10 @@
             </Menu>
          </menus>
       </MenuBar>
+      <Label fx:id="eventInfoLabel" alignment="BOTTOM_RIGHT" blendMode="DIFFERENCE" text="event info" textAlignment="RIGHT" textFill="LIME" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+         <GridPane.margin>
+            <Insets bottom="2.0" right="4.0" />
+         </GridPane.margin>
+      </Label>
    </children>
 </GridPane>

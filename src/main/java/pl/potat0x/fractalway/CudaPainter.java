@@ -1,13 +1,15 @@
 package pl.potat0x.fractalway;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.CUdeviceptr;
+import jcuda.driver.CUevent;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
-import jcuda.driver.JCudaDriver;
 import jcuda.runtime.dim3;
 import pl.potat0x.fractalway.fractal.Fractal;
 
@@ -16,7 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static jcuda.driver.CUevent_flags.CU_EVENT_DEFAULT;
 import static jcuda.driver.JCudaDriver.*;
+import static jcuda.runtime.JCuda.cudaDeviceSynchronize;
 
 class CudaPainter {
     private final int imageWidth;
@@ -42,27 +46,33 @@ class CudaPainter {
         prepareCuda();
     }
 
-    void paint(int[] red, int[] green, int[] blue, Fractal fractal, double... fractalSpecificParams) {
+    Tuple2<Float, Float> paint(int[] red, int[] green, int[] blue, Fractal fractal, double... fractalSpecificParams) {
         Pointer kernelParameters = prepareKernelParams(fractal, fractalSpecificParams);
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
         int blocksPerGridX = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
         int blocksPerGridY = (imageHeight + threadsPerBlock - 1) / threadsPerBlock;
         dim3 dimGrid = new dim3(blocksPerGridX, blocksPerGridY, 1);
-
         System.out.println("block " + dimBlock + "\ngrid  " + dimGrid);
 
+        CudaEventClock cudaClock = new CudaEventClock();
+
+        cudaClock.start();
         cuLaunchKernel(function,
                 dimGrid.x, dimGrid.y, dimGrid.z,
                 dimBlock.x, dimBlock.y, dimBlock.z,
                 0, null, kernelParameters, null
         );
+        float kernelTime = cudaClock.stop();
 
-        cuCtxSynchronize();
-
+        cudaClock.start();
         cuMemcpyDtoH(Pointer.to(red), deviceOutputR, arraySizeInBytes);
         cuMemcpyDtoH(Pointer.to(green), deviceOutputG, arraySizeInBytes);
         cuMemcpyDtoH(Pointer.to(blue), deviceOutputB, arraySizeInBytes);
+        float memcpyTime = cudaClock.stop();
+
+        cudaClock.destroy();
+        return Tuple.of(kernelTime, memcpyTime);
     }
 
     private void prepareCuda() {
