@@ -242,14 +242,15 @@ public class MainController {
     private double[] getFractalParams() {
         return Match(fractal.type).of(
                 Case($(is(FractalType.JULIA_SET)), new double[]{fractal.complexParamRe, fractal.complexParamIm}),
-                Case($(is(FractalType.MANDELBROT_SET)), new double[0])
+                Case($(isIn(FractalType.MANDELBROT_SET, FractalType.BURNING_SHIP)), new double[0])
         );
     }
 
     private CudaPainter createFractalPainter() {
         Tuple2<String, String> kernelFileAndName = Match(fractal.type).of(
                 Case($(is(FractalType.MANDELBROT_SET)), Tuple.of("/kernels/mandelbrotSet.ptx", "mandelbrotSet")),
-                Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet"))
+                Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet")),
+                Case($(is(FractalType.BURNING_SHIP)), Tuple.of("/kernels/burningShip.ptx", "burningShip"))
         );
         return new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, kernelFileAndName._1, kernelFileAndName._2);
     }
