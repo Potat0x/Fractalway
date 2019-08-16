@@ -85,13 +85,6 @@ public class MainController {
         initDeviceInfoMenuItem();
         initEventInfoMenuItem();
         initInvertColorsMenuItem();
-
-        memcpyTotalTime = 0;
-        memcpysCount = 0;
-        memcpyMinTime = Float.POSITIVE_INFINITY;
-        memcpyMaxTime = Float.NEGATIVE_INFINITY;
-        canvasPaintTotalTime = 0;
-        canvasPaintCount = 0;
     }
 
     @FXML
@@ -217,25 +210,11 @@ public class MainController {
         return menuItems;
     }
 
-    float memcpyTotalTime = 0;
-    int memcpysCount = 0;
-    float memcpyMinTime = Float.POSITIVE_INFINITY;
-    float memcpyMaxTime = Float.NEGATIVE_INFINITY;
-
     private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
-        for (int i = 0; i < 1; i++) {
-            Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal, fractalSpecificParams);
-            System.out.println("cudaPaint (" + (eventInfo._1 + eventInfo._2) + " ms): " + fractal.getViewAsString());
-
-            memcpyTotalTime += eventInfo._2;
-            memcpysCount++;
-            System.out.println("memcpy: count = " + memcpysCount + ", avg time = " + (memcpyTotalTime / memcpysCount) + " ms");
-            memcpyMinTime = Math.min(memcpyMinTime, eventInfo._2);
-            memcpyMaxTime = Math.max(memcpyMaxTime, eventInfo._2);
-            System.out.println("memcpy: min = " + memcpyMinTime + " ms, max = " + memcpyMaxTime + " ms");
-        }
-
-        return Tuple.of(0f, 0f);
+        Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal, fractalSpecificParams);
+        System.out.println("cudaPaint (kernel: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms"
+                + "\n\t" + fractal.getViewAsString());
+        return Tuple.of(eventInfo._1, eventInfo._2);
     }
 
     private void refreshEventLabel(Tuple2<Float, Float> paintTimeInfo) {
@@ -251,21 +230,12 @@ public class MainController {
         }
     }
 
-    long canvasPaintTotalTime = 0;
-    int canvasPaintCount = 0;
-
     private void drawFractal() {
         Tuple2<Float, Float> timeInfo = cudaPaint(getFractalParams());
-
-        for (int i = 0; i < 1; i++) {
-            long paintStart = System.nanoTime();
-            paintImageOnCanvas();
-            long paintEnd = System.nanoTime() - paintStart;
-            System.out.println("paintImageOnCanvas: " + paintEnd / 1000.0 + " ms");
-            canvasPaintCount++;
-            canvasPaintTotalTime += paintEnd;
-        }
-        System.out.println("paintImageOnCanvas: count = " + canvasPaintCount + ", avg time = " + (canvasPaintTotalTime / canvasPaintCount) / 1000000.0 + " ms");
+        long paintStart = System.currentTimeMillis();
+        paintImageOnCanvas();
+        long paintEnd = System.currentTimeMillis() - paintStart;
+        System.out.println("paintImageOnCanvas: " + paintEnd + " ms");
         refreshEventLabel(timeInfo);
     }
 
