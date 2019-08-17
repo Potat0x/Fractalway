@@ -10,9 +10,12 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.input.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
@@ -32,6 +35,9 @@ import java.util.List;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
 import static io.vavr.Predicates.isIn;
+import static javafx.scene.layout.BackgroundPosition.CENTER;
+import static javafx.scene.layout.BackgroundRepeat.REPEAT;
+import static javafx.scene.layout.BackgroundSize.DEFAULT;
 
 public class MainController {
     private int canvasWidth;
@@ -48,6 +54,8 @@ public class MainController {
     private boolean invertFractalColors;
     private DecimalFormat decimalFormat;
 
+    @FXML
+    private GridPane mainPane;
     @FXML
     private Canvas canvas;
     @FXML
@@ -79,6 +87,7 @@ public class MainController {
 
     @FXML
     private void initialize() {
+        setBackgroundImage();
         initCanvas();
         drawPattern();
         initFractalMenu();
@@ -140,6 +149,11 @@ public class MainController {
 
     private void initImageArray() {
         argb = new int[canvasWidth * canvasHeight];
+    }
+
+    private void setBackgroundImage() {
+        Image image = new Image("file:src/main/resources/images/background.png");
+        mainPane.setBackground(new Background(new BackgroundImage(image, REPEAT, REPEAT, CENTER, DEFAULT)));
     }
 
     private void initCanvas() {
@@ -213,7 +227,6 @@ public class MainController {
             windowResized = true;
         };
 
-        GridPane mainPane = (GridPane) canvas.getParent();
         mainPane.widthProperty().addListener(resizeListener);
         mainPane.heightProperty().addListener(resizeListener);
         mainPane.setOnMouseEntered(event -> resize());
