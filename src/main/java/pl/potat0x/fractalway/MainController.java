@@ -3,6 +3,7 @@ package pl.potat0x.fractalway;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -12,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.input.*;
+import javafx.scene.layout.GridPane;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
@@ -23,7 +25,6 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.io.IOException;
 import java.math.RoundingMode;
-import java.nio.IntBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +34,19 @@ import static io.vavr.Predicates.is;
 import static io.vavr.Predicates.isIn;
 
 public class MainController {
-    private final int CANVAS_WIDTH = 800;
-    private final int CANVAS_HEIGHT = 600;
-    private final int[] argb;
+    private int canvasWidth;
+    private int canvasHeight;
+    private int[] argb;
 
-    private final PatternPainter patternPainter;
+    private boolean windowResized;
+    private int newCanvasWidth;
+    private int newCanvasHeight;
+
+    private PatternPainter patternPainter;
     private Fractal fractal;
     private CudaPainter painter;
-    private PixelFormat<IntBuffer> pixelFormat;
     private boolean invertFractalColors;
-    private DecimalFormat df;
+    private DecimalFormat decimalFormat;
 
     @FXML
     private Canvas canvas;
@@ -64,14 +68,12 @@ public class MainController {
     private CheckMenuItem eventInfoMenuItem;
 
     public MainController() {
+        canvasWidth = 820;
+        canvasHeight = 620;
+        initImageArray();
+        initDecimalFormatter();
         fractal = new Fractal(FractalType.MANDELBROT_SET);
-        int arraySize = CANVAS_WIDTH * CANVAS_HEIGHT;
-        this.argb = new int[arraySize];
-        pixelFormat = PixelFormat.getIntArgbPreInstance();
-        patternPainter = new PatternPainter(CANVAS_WIDTH, argb);
-        df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        df.setMinimumFractionDigits(2);
+        patternPainter = new PatternPainter(canvasWidth, argb);
         invertFractalColors = false;
     }
 
@@ -85,6 +87,7 @@ public class MainController {
         initDeviceInfoMenuItem();
         initEventInfoMenuItem();
         initInvertColorsMenuItem();
+        initResizeEventHandler();
     }
 
     @FXML
@@ -135,9 +138,13 @@ public class MainController {
         openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, this::drawFractal), "Fractal settings");
     }
 
+    private void initImageArray() {
+        argb = new int[canvasWidth * canvasHeight];
+    }
+
     private void initCanvas() {
-        canvas.setWidth(CANVAS_WIDTH);
-        canvas.setHeight(CANVAS_HEIGHT);
+        canvas.setWidth(canvasWidth);
+        canvas.setHeight(canvasHeight);
         canvas.setFocusTraversable(true);
     }
 
@@ -199,6 +206,39 @@ public class MainController {
         });
     }
 
+    private void initResizeEventHandler() {
+        ChangeListener<Number> resizeListener = (observable, oldValue, newValue) -> {
+            newCanvasWidth = new Double(canvas.getScene().getWidth()).intValue();
+            newCanvasHeight = new Double(canvas.getScene().getHeight()).intValue();
+            windowResized = true;
+        };
+
+        GridPane mainPane = (GridPane) canvas.getParent();
+        mainPane.widthProperty().addListener(resizeListener);
+        mainPane.heightProperty().addListener(resizeListener);
+        mainPane.setOnMouseEntered(event -> resize());
+    }
+
+    private void resize() {
+        if (windowResized) {
+            canvasWidth = newCanvasWidth;
+            canvasHeight = newCanvasHeight;
+            initImageArray();
+            initCanvas();
+            patternPainter = new PatternPainter(canvasWidth, argb);
+            releaseFractalPainter();
+            painter = createFractalPainter();
+            drawFractal();
+            windowResized = false;
+        }
+    }
+
+    private void initDecimalFormatter() {
+        decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        decimalFormat.setMinimumFractionDigits(2);
+    }
+
     private List<MenuItem> addItemsToToggleGroup(ToggleGroup group, Object... items) {
         List<MenuItem> menuItems = new ArrayList<>();
         for (Object type : items) {
@@ -218,9 +258,9 @@ public class MainController {
     }
 
     private void refreshEventLabel(Tuple2<Float, Float> paintTimeInfo) {
-        String text = "Kernel time: " + df.format(paintTimeInfo._1) + " ms" +
-                "\nMemcpy time: " + df.format(paintTimeInfo._2) + " ms" +
-                "\nTotal: " + df.format(paintTimeInfo._1 + paintTimeInfo._2) + " ms";
+        String text = "Kernel time: " + decimalFormat.format(paintTimeInfo._1) + " ms" +
+                "\nMemcpy time: " + decimalFormat.format(paintTimeInfo._2) + " ms" +
+                "\nTotal: " + decimalFormat.format(paintTimeInfo._1 + paintTimeInfo._2) + " ms";
         eventInfoLabel.setText(text);
     }
 
@@ -252,17 +292,17 @@ public class MainController {
                 Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet")),
                 Case($(is(FractalType.BURNING_SHIP)), Tuple.of("/kernels/burningShip.ptx", "burningShip"))
         );
-        return new CudaPainter(CANVAS_WIDTH, CANVAS_HEIGHT, kernelFileAndName._1, kernelFileAndName._2);
+        return new CudaPainter(canvasWidth, canvasHeight, kernelFileAndName._1, kernelFileAndName._2);
     }
 
     private void paintImageOnCanvas() {
-        PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
-        for (int y = 0; y < CANVAS_HEIGHT; y++) {
-            for (int x = 0; x < CANVAS_WIDTH; x++) {
-                argb[y * CANVAS_WIDTH + x] = createColorArgb(x, y);
+        for (int y = 0; y < canvasHeight; y++) {
+            for (int x = 0; x < canvasWidth; x++) {
+                argb[y * canvasWidth + x] = createColorArgb(x, y);
             }
         }
-        pixelWriter.setPixels(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, pixelFormat, argb, 0, CANVAS_WIDTH);
+        PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
+        pixelWriter.setPixels(0, 0, canvasWidth, canvasHeight, PixelFormat.getIntArgbPreInstance(), argb, 0, canvasWidth);
     }
 
     private void loadPattern() {
@@ -294,15 +334,15 @@ public class MainController {
     }
 
     private int calculateIndex(int x, int y) {
-        return CANVAS_WIDTH * y + x;
+        return canvasWidth * y + x;
     }
 
     private void moveClickedFractalPointToCanvasCenter(double eventX, double eventY) {
-        fractal.moveFractalPointToImageCenter(CANVAS_WIDTH, CANVAS_HEIGHT, eventX, eventY);
+        fractal.moveFractalPointToImageCenter(canvasWidth, canvasHeight, eventX, eventY);
     }
 
     private void moveMouseToCanvasCenter() {
-        Point2D point2D = canvas.localToScreen(CANVAS_WIDTH / 2.0, CANVAS_HEIGHT / 2.0);
+        Point2D point2D = canvas.localToScreen(canvasWidth / 2.0, canvasHeight / 2.0);
         setMousePos(Math.round(point2D.getX()), Math.round(point2D.getY()));
     }
 

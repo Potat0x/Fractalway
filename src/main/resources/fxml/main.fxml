@@ -7,7 +7,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -20,12 +19,8 @@
       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0">
-         <children>
-            <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="300.0" />
-         </children>
-      </AnchorPane>
-      <Label fx:id="deviceInfoLabel" alignment="TOP_RIGHT" blendMode="DIFFERENCE" focusTraversable="false" mouseTransparent="true" text="device info" textAlignment="RIGHT" textFill="LIME" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+      <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="300.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Label fx:id="deviceInfoLabel" alignment="TOP_RIGHT" blendMode="DIFFERENCE" focusTraversable="false" mouseTransparent="true" text="device info" textAlignment="RIGHT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets right="4.0" top="2.0" />
          </GridPane.margin>
@@ -49,7 +44,7 @@
             </Menu>
          </menus>
       </MenuBar>
-      <Label fx:id="eventInfoLabel" alignment="BOTTOM_RIGHT" blendMode="DIFFERENCE" text="event info" textAlignment="RIGHT" textFill="LIME" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+      <Label fx:id="eventInfoLabel" alignment="BOTTOM_RIGHT" blendMode="DIFFERENCE" text="event info" textAlignment="RIGHT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets bottom="2.0" right="4.0" />
          </GridPane.margin>
