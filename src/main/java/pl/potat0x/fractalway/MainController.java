@@ -19,8 +19,14 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
+import pl.potat0x.fractalway.fractalpainter.CpuPainter;
+import pl.potat0x.fractalway.fractalpainter.CudaPainter;
+import pl.potat0x.fractalway.fractalpainter.FractalPainter;
+import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.CudaDeviceInfo;
+import pl.potat0x.fractalway.utils.PatternPainter;
 import pl.potat0x.fractalway.utils.StringCapitalizer;
 import pl.potat0x.fractalway.utils.WindowBuilder;
 
@@ -50,9 +56,11 @@ public class MainController {
 
     private PatternPainter patternPainter;
     private Fractal fractal;
-    private CudaPainter painter;
+    private FractalPainter painter;
     private boolean invertFractalColors;
     private DecimalFormat decimalFormat;
+
+    private ToggleGroup deviceGroup;
 
     @FXML
     private GridPane mainPane;
@@ -60,6 +68,8 @@ public class MainController {
     private Canvas canvas;
     @FXML
     private Menu fractalMenu;
+    @FXML
+    private Menu deviceMenu;
     @FXML
     private Menu settingsMenu;
     @FXML
@@ -89,6 +99,7 @@ public class MainController {
     private void initialize() {
         setBackgroundImage();
         initCanvas();
+        initDeviceMenu();
         drawPattern();
         initFractalMenu();
         initCursorMenu();
@@ -164,7 +175,7 @@ public class MainController {
 
     private void initCursorMenu() {
         ToggleGroup cursorGroup = new ToggleGroup();
-        List<MenuItem> menuItems = addItemsToToggleGroup(cursorGroup, Cursor.DEFAULT, Cursor.CROSSHAIR, Cursor.NONE);
+        List<MenuItem> menuItems = createRadioItemsInToggleGroup(cursorGroup, Cursor.DEFAULT, Cursor.CROSSHAIR, Cursor.NONE);
         canvasCursorMenu.getItems().addAll(menuItems);
 
         cursorGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -178,7 +189,7 @@ public class MainController {
 
     private void initFractalMenu() {
         ToggleGroup fractalGroup = new ToggleGroup();
-        List<MenuItem> menuItems = addItemsToToggleGroup(fractalGroup, (Object[]) FractalType.values());
+        List<MenuItem> menuItems = createRadioItemsInToggleGroup(fractalGroup, (Object[]) FractalType.values());
         fractalMenu.getItems().addAll(menuItems);
 
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -192,6 +203,19 @@ public class MainController {
         if (fractalGroup.getToggles().size() > 0) {
             fractalGroup.getToggles().get(0).setSelected(true);
         }
+    }
+
+    private void initDeviceMenu() {
+        deviceGroup = new ToggleGroup();
+        deviceMenu.getItems().addAll(
+                createRadioItemInToggleGroup(deviceGroup, "CPU", FractalPainterDevice.CPU),
+                createRadioItemInToggleGroup(deviceGroup, "CUDA GPU", FractalPainterDevice.CUDA_GPU)
+        );
+        deviceGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            painter = createFractalPainter();
+            drawFractal();
+        });
+        deviceGroup.getToggles().get(1).setSelected(true);
     }
 
     private void initDeviceInfoLabel() {
@@ -252,20 +276,25 @@ public class MainController {
         decimalFormat.setMinimumFractionDigits(2);
     }
 
-    private List<MenuItem> addItemsToToggleGroup(ToggleGroup group, Object... items) {
+    private List<MenuItem> createRadioItemsInToggleGroup(ToggleGroup group, Object... items) {
         List<MenuItem> menuItems = new ArrayList<>();
         for (Object type : items) {
-            RadioMenuItem menuItem = new RadioMenuItem(StringCapitalizer.capitalizeFirstLetter(type.toString().toLowerCase()));
-            menuItem.setToggleGroup(group);
-            menuItem.setUserData(type);
-            menuItems.add(menuItem);
+            RadioMenuItem item = createRadioItemInToggleGroup(group, StringCapitalizer.capitalizeFirstLetter(type.toString().toLowerCase()), type);
+            menuItems.add(item);
         }
         return menuItems;
     }
 
-    private Tuple2<Float, Float> cudaPaint(double... fractalSpecificParams) {
-        Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal, fractalSpecificParams);
-        System.out.println("cudaPaint (kernel: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms"
+    private RadioMenuItem createRadioItemInToggleGroup(ToggleGroup group, String text, Object userData) {
+        RadioMenuItem item = new RadioMenuItem(text);
+        item.setToggleGroup(group);
+        item.setUserData(userData);
+        return item;
+    }
+
+    private Tuple2<Float, Float> paintFractal() {
+        Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal);
+        System.out.println("paintFractal (calc: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms"
                 + "\n\t" + fractal.getViewAsString());
         return Tuple.of(eventInfo._1, eventInfo._2);
     }
@@ -284,7 +313,7 @@ public class MainController {
     }
 
     private void drawFractal() {
-        Tuple2<Float, Float> timeInfo = cudaPaint(getFractalParams());
+        Tuple2<Float, Float> timeInfo = paintFractal();
         long paintStart = System.currentTimeMillis();
         paintImageOnCanvas();
         long paintEnd = System.currentTimeMillis() - paintStart;
@@ -292,14 +321,22 @@ public class MainController {
         refreshEventLabel(timeInfo);
     }
 
-    private double[] getFractalParams() {
-        return Match(fractal.type).of(
-                Case($(is(FractalType.JULIA_SET)), new double[]{fractal.complexParamRe, fractal.complexParamIm}),
-                Case($(isIn(FractalType.MANDELBROT_SET, FractalType.BURNING_SHIP)), new double[0])
-        );
+    private FractalPainterDevice getCurrentDeviceType() {
+        return (FractalPainterDevice) deviceGroup.getSelectedToggle().getUserData();
     }
 
-    private CudaPainter createFractalPainter() {
+    private FractalPainter createFractalPainter() {
+        if (getCurrentDeviceType().equals(FractalPainterDevice.CUDA_GPU)) {
+            return createCudaFractalPainter();
+        }
+        return createCpuFractalPainter();
+    }
+
+    private FractalPainter createCpuFractalPainter() {
+        return new CpuPainter(canvasWidth, canvasHeight);
+    }
+
+    private CudaPainter createCudaFractalPainter() {
         Tuple2<String, String> kernelFileAndName = Match(fractal.type).of(
                 Case($(is(FractalType.MANDELBROT_SET)), Tuple.of("/kernels/mandelbrotSet.ptx", "mandelbrotSet")),
                 Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet")),

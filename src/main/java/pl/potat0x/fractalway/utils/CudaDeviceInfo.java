@@ -1,4 +1,4 @@
-package pl.potat0x.fractalway;
+package pl.potat0x.fractalway.utils;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -14,21 +14,21 @@ import static jcuda.driver.JCudaDriver.cuDeviceGetName;
 import static jcuda.driver.JCudaDriver.cuDriverGetVersion;
 import static jcuda.driver.JCudaDriver.cuMemGetInfo;
 
-class CudaDeviceInfo {
+public class CudaDeviceInfo {
     private CUdevice device;
 
-    CudaDeviceInfo(int deviceOrdinal) {
+    public CudaDeviceInfo(int deviceOrdinal) {
         device = new CUdevice();
         cuDeviceGet(device, deviceOrdinal);
     }
 
-    String name() {
+    public String name() {
         byte[] name = new byte[512];
         cuDeviceGetName(name, name.length, device);
         return new String(name, StandardCharsets.US_ASCII);
     }
 
-    String computeCapability() {
+    public String computeCapability() {
         int[] major = {0};
         int[] minor = {0};
         cuDeviceGetAttribute(major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, device);
@@ -36,14 +36,14 @@ class CudaDeviceInfo {
         return "" + major[0] + "." + minor[0];
     }
 
-    Tuple2<Long, Long> freeAndTotalMemoryInBytes() {
+    public Tuple2<Long, Long> freeAndTotalMemoryInBytes() {
         long[] free = {0};
         long[] total = {0};
         cuMemGetInfo(free, total);
         return Tuple.of(total[0] - free[0], total[0]);
     }
 
-    String cudaVersion() {
+    public String cudaVersion() {
         int[] cudaVersion = {0};
         cuDriverGetVersion(cudaVersion);
         return decodeCudaVersion(cudaVersion[0]);

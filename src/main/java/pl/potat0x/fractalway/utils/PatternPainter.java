@@ -1,10 +1,10 @@
-package pl.potat0x.fractalway;
+package pl.potat0x.fractalway.utils;
 
-class PatternPainter {
+public class PatternPainter {
     private final int[] argb;
     private final int canvasWidth;
 
-    PatternPainter(int canvasWidth, int[] argb) {
+    public PatternPainter(int canvasWidth, int[] argb) {
         this.argb = argb;
         this.canvasWidth = canvasWidth;
     }
@@ -13,18 +13,18 @@ class PatternPainter {
         return (int) (((1.0 * valToScale) / (1.0 * canvasWidth)) * 255.0);
     }
 
-    void gradient(int x, int y) {
+    public void gradient(int x, int y) {
         int index = calculateIndex(x, y);
         argb[index] = argb(scaleTo255(x), scaleTo255(y), 0);
     }
 
-    void diagonalStripes(int x, int y) {
+    public void diagonalStripes(int x, int y) {
         int index = calculateIndex(x, y);
         float mn = (float) ((x + y) % 33 < 15 ? 0.5 : 0.9);
         argb[index] = argb((int) (44 * mn));
     }
 
-    void colorfulStripesAndCircles(int x, int y) {
+    public void colorfulStripesAndCircles(int x, int y) {
         int index = calculateIndex(x, y);
         argb[index] = argb(
                 ((x * y) % 50) * 4,

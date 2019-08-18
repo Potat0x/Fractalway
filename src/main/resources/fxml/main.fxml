@@ -28,6 +28,7 @@
       <MenuBar maxWidth="-Infinity" GridPane.halignment="LEFT" GridPane.valignment="TOP">
          <menus>
             <Menu fx:id="fractalMenu" mnemonicParsing="false" text="Fractal" />
+            <Menu fx:id="deviceMenu" mnemonicParsing="false" text="Device" />
             <Menu mnemonicParsing="false" text="View">
                <items>
                   <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />

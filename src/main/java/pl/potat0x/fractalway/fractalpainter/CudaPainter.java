@@ -1,4 +1,4 @@
-package pl.potat0x.fractalway;
+package pl.potat0x.fractalway.fractalpainter;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -10,16 +10,21 @@ import jcuda.driver.CUdeviceptr;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
 import jcuda.runtime.dim3;
+import pl.potat0x.fractalway.clock.CudaEventClock;
 import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.fractal.FractalType;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.is;
+import static io.vavr.Predicates.isIn;
 import static jcuda.driver.JCudaDriver.*;
 
-class CudaPainter {
+public class CudaPainter implements FractalPainter {
     private final int imageWidth;
     private final int imageHeight;
     private final long arraySizeInBytes;
@@ -31,7 +36,7 @@ class CudaPainter {
     private CUmodule module;
     private CUcontext context;
 
-    CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName) {
+    public CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName) {
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         this.ptxFileName = new File(CudaPainter.class.getResource(kernelFilename).getFile()).getAbsolutePath();
@@ -41,8 +46,18 @@ class CudaPainter {
         prepareCuda();
     }
 
-    Tuple2<Float, Float> paint(int[] argb, Fractal fractal, double... fractalSpecificParams) {
-        Pointer kernelParameters = prepareKernelParams(fractal, fractalSpecificParams);
+    private double[] getFractalSpecificParams(Fractal fractal) {
+        return Match(fractal.type).of(
+                Case($(is(FractalType.JULIA_SET)), new double[]{fractal.complexParamRe, fractal.complexParamIm}),
+                Case($(isIn(FractalType.MANDELBROT_SET, FractalType.BURNING_SHIP)), new double[0])
+        );
+    }
+
+    @Override
+    public Tuple2<Float, Float> paint(int[] argb, Fractal fractal) {
+        System.out.println("CudaPainter.paint");
+
+        Pointer kernelParameters = prepareKernelParams(fractal, getFractalSpecificParams(fractal));
 
         dim3 dimBlock = new dim3(threadsPerBlock, threadsPerBlock, 1);
         int blocksPerGridX = (imageWidth + threadsPerBlock - 1) / threadsPerBlock;
@@ -85,7 +100,8 @@ class CudaPainter {
         cuMemAlloc(deviceOutputArgb, arraySizeInBytes);
     }
 
-    void destroy() {
+    @Override
+    public void destroy() {
         cuMemFree(deviceOutputArgb);
         cuModuleUnload(module);
         cuCtxDestroy(context);
