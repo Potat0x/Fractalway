@@ -201,22 +201,33 @@ public class MainController {
             drawFractal();
         });
 
-        if (fractalGroup.getToggles().size() > 0) {
-            fractalGroup.getToggles().get(0).setSelected(true);
-        }
+        selectFirstItemInToggleGroup(fractalGroup);
+    }
+
+    private void selectFirstItemInToggleGroup(ToggleGroup group) {
+        group.getToggles().get(0).setSelected(true);
     }
 
     private void initDeviceMenu() {
         deviceGroup = new ToggleGroup();
-        deviceMenu.getItems().addAll(
-                createRadioItemInToggleGroup(deviceGroup, "CPU", FractalPainterDevice.CPU),
-                createRadioItemInToggleGroup(deviceGroup, "CUDA GPU", FractalPainterDevice.CUDA_GPU)
-        );
+        deviceMenu.getItems().add(createRadioItemInToggleGroup(deviceGroup, "CPU", FractalPainterDevice.CPU));
+
+        int cudaDeviceCount = CudaDeviceInfo.getDeviceCount();
+        System.out.println("Found CUDA devices: " + cudaDeviceCount);
+        if (cudaDeviceCount > 0) {
+            deviceMenu.getItems().add(createRadioItemInToggleGroup(deviceGroup, "CUDA GPU", FractalPainterDevice.CUDA_GPU));
+        }
+
         deviceGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             painter = createFractalPainter();
             drawFractal();
         });
-        deviceGroup.getToggles().get(1).setSelected(true);
+
+        selectLastItemInToggleGroup(deviceGroup);
+    }
+
+    private void selectLastItemInToggleGroup(ToggleGroup group) {
+        group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
     }
 
     private void initDeviceInfoLabel() {

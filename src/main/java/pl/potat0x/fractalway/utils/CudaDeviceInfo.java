@@ -10,12 +10,19 @@ import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABI
 import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR;
 import static jcuda.driver.JCudaDriver.cuDeviceGet;
 import static jcuda.driver.JCudaDriver.cuDeviceGetAttribute;
+import static jcuda.driver.JCudaDriver.cuDeviceGetCount;
 import static jcuda.driver.JCudaDriver.cuDeviceGetName;
 import static jcuda.driver.JCudaDriver.cuDriverGetVersion;
 import static jcuda.driver.JCudaDriver.cuMemGetInfo;
 
 public class CudaDeviceInfo {
     private CUdevice device;
+
+    public static int getDeviceCount() {
+        int[] count = {0};
+        cuDeviceGetCount(count);
+        return count[0];
+    }
 
     public CudaDeviceInfo(int deviceOrdinal) {
         device = new CUdevice();
