@@ -3,6 +3,7 @@ package pl.potat0x.fractalway.fractalpainter;
 import io.vavr.Function4;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 
@@ -28,10 +29,9 @@ public class CpuPainter implements FractalPainter {
                 Case($(is(FractalType.BURNING_SHIP)), Function4.of(this::burningShip))
         );
 
-        long start = System.currentTimeMillis();
+        Clock clock = new Clock();
         makeCalculation(argb, fractal, fractalFunction);
-        long end = System.currentTimeMillis() - start;
-        return Tuple.of(end * 1f, 0f);
+        return Tuple.of(clock.getElapsedTime() * 1f, 0f);
     }
 
     private void makeCalculation(int[] argb, Fractal fractal, Function4<int[], Fractal, Integer, Integer, Void> fractalFunction) {

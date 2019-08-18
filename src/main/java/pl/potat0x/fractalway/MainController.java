@@ -17,6 +17,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
+import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.fractalpainter.CpuPainter;
@@ -314,10 +315,9 @@ public class MainController {
 
     private void drawFractal() {
         Tuple2<Float, Float> timeInfo = paintFractal();
-        long paintStart = System.currentTimeMillis();
+        Clock clock = new Clock();
         paintImageOnCanvas();
-        long paintEnd = System.currentTimeMillis() - paintStart;
-        System.out.println("paintImageOnCanvas: " + paintEnd + " ms");
+        System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms");
         refreshEventLabel(timeInfo);
     }
 
