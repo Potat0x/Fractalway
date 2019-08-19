@@ -26,10 +26,11 @@ import pl.potat0x.fractalway.fractalpainter.FractalPainter;
 import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
-import pl.potat0x.fractalway.utils.CudaDeviceInfo;
 import pl.potat0x.fractalway.utils.PatternPainter;
 import pl.potat0x.fractalway.utils.StringCapitalizer;
 import pl.potat0x.fractalway.utils.WindowBuilder;
+import pl.potat0x.fractalway.utils.device.CpuInfo;
+import pl.potat0x.fractalway.utils.device.CudaDeviceInfo;
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -60,6 +61,8 @@ public class MainController {
     private FractalPainter painter;
     private boolean invertFractalColors;
     private DecimalFormat decimalFormat;
+    private CpuInfo cpuInfo;
+
 
     private ToggleGroup deviceGroup;
 
@@ -94,6 +97,7 @@ public class MainController {
         fractal = new Fractal(FractalType.MANDELBROT_SET);
         patternPainter = new PatternPainter(canvasWidth, argb);
         invertFractalColors = false;
+        cpuInfo = new CpuInfo();
     }
 
     @FXML
@@ -104,7 +108,6 @@ public class MainController {
         drawPattern();
         initFractalMenu();
         initCursorMenu();
-        initDeviceInfoLabel();
         initDeviceInfoMenuItem();
         initEventInfoMenuItem();
         initInvertColorsMenuItem();
@@ -219,6 +222,7 @@ public class MainController {
         }
 
         deviceGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            initDeviceInfoLabel(getCurrentDeviceType());
             painter = createFractalPainter();
             drawFractal();
         });
@@ -230,13 +234,29 @@ public class MainController {
         group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
     }
 
-    private void initDeviceInfoLabel() {
+    private void initDeviceInfoLabel(FractalPainterDevice deviceType) {
+        String labelText = createDeviceInfoText(deviceType);
+        deviceInfoLabel.setText(labelText);
+    }
+
+    private String createDeviceInfoText(FractalPainterDevice deviceType) {
+        if (deviceType == FractalPainterDevice.CUDA_GPU) {
+            return cudaDeviceInfoText();
+        }
+        return cpuDeviceInfoText();
+    }
+
+    private String cudaDeviceInfoText() {
         CudaDeviceInfo devInfo = new CudaDeviceInfo(0);
-        String text = devInfo.name() +
-                "\nCUDA version: " + devInfo.cudaVersion() +
-                "\nCompute capability: " + devInfo.computeCapability() +
-                "\nMemory: " + devInfo.freeAndTotalMemoryInBytes()._2 / (1024 * 1024) + " MB";
-        Platform.runLater(() -> deviceInfoLabel.setText(text));
+        return devInfo.name() +
+                "\nCUDA " + devInfo.cudaVersion() +
+                "\nCompute capability " + devInfo.computeCapability();
+    }
+
+    private String cpuDeviceInfoText() {
+        return cpuInfo.cpu.getName() + "\n" +
+                cpuInfo.cpu.getPhysicalProcessorCount() + " cores, " +
+                cpuInfo.cpu.getLogicalProcessorCount() + " threads";
     }
 
     private void initDeviceInfoMenuItem() {
@@ -306,7 +326,7 @@ public class MainController {
 
     private Tuple2<Float, Float> paintFractal() {
         Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal);
-        System.out.println("paintFractal (calc: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms"
+        System.out.println("paintFractal (calc: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms)"
                 + "\n\t" + fractal.getViewAsString());
         return Tuple.of(eventInfo._1, eventInfo._2);
     }
