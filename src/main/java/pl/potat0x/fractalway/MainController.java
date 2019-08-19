@@ -2,7 +2,6 @@ package pl.potat0x.fractalway;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -81,13 +80,13 @@ public class MainController {
     @FXML
     private Label deviceInfoLabel;
     @FXML
-    private Label eventInfoLabel;
+    private Label timeInfoLabel;
     @FXML
     private CheckMenuItem deviceInfoMenuItem;
     @FXML
     private CheckMenuItem invertColorsMenuItem;
     @FXML
-    private CheckMenuItem eventInfoMenuItem;
+    private CheckMenuItem timeInfoMenuItem;
 
     public MainController() {
         canvasWidth = 820;
@@ -109,7 +108,7 @@ public class MainController {
         initFractalMenu();
         initCursorMenu();
         initDeviceInfoMenuItem();
-        initEventInfoMenuItem();
+        initTimeInfoMenuItem();
         initInvertColorsMenuItem();
         initResizeEventHandler();
     }
@@ -264,9 +263,9 @@ public class MainController {
         deviceInfoMenuItem.selectedProperty().set(true);
     }
 
-    private void initEventInfoMenuItem() {
-        eventInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> eventInfoLabel.setVisible(newValue));
-        eventInfoMenuItem.selectedProperty().set(true);
+    private void initTimeInfoMenuItem() {
+        timeInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> timeInfoLabel.setVisible(newValue));
+        timeInfoMenuItem.selectedProperty().set(true);
     }
 
     private void initInvertColorsMenuItem() {
@@ -325,17 +324,32 @@ public class MainController {
     }
 
     private Tuple2<Float, Float> paintFractal() {
-        Tuple2<Float, Float> eventInfo = painter.paint(argb, fractal);
-        System.out.println("paintFractal (calc: " + eventInfo._1 + " ms, memcpy: " + eventInfo._2 + " ms, total: " + (eventInfo._1 + eventInfo._2) + " ms)"
+        Tuple2<Float, Float> timeInfo = painter.paint(argb, fractal);
+        System.out.println("paintFractal (calc: " + timeInfo._1 + " ms, memcpy: " + timeInfo._2 + " ms, total: " + (timeInfo._1 + timeInfo._2) + " ms)"
                 + "\n\t" + fractal.getViewAsString());
-        return Tuple.of(eventInfo._1, eventInfo._2);
+        return Tuple.of(timeInfo._1, timeInfo._2);
     }
 
-    private void refreshEventLabel(Tuple2<Float, Float> paintTimeInfo) {
-        String text = "Kernel time: " + decimalFormat.format(paintTimeInfo._1) + " ms" +
-                "\nMemcpy time: " + decimalFormat.format(paintTimeInfo._2) + " ms" +
-                "\nTotal: " + decimalFormat.format(paintTimeInfo._1 + paintTimeInfo._2) + " ms";
-        eventInfoLabel.setText(text);
+    private void refreshTimeInfoLabel(Tuple2<Float, Float> timeInfo) {
+        String text = createTimeInfoText(timeInfo);
+        timeInfoLabel.setText(text);
+    }
+
+    private String createTimeInfoText(Tuple2<Float, Float> timeInfo) {
+        if (getCurrentDeviceType() == FractalPainterDevice.CUDA_GPU) {
+            return gpuTimeInfoText(timeInfo);
+        }
+        return cpuTimeInfoText(timeInfo);
+    }
+
+    private String gpuTimeInfoText(Tuple2<Float, Float> timeInfo) {
+        return "Kernel: " + decimalFormat.format(timeInfo._1) + " ms" +
+                "\nMemcpy: " + decimalFormat.format(timeInfo._2) + " ms" +
+                "\nTotal: " + decimalFormat.format(timeInfo._1 + timeInfo._2) + " ms";
+    }
+
+    private String cpuTimeInfoText(Tuple2<Float, Float> timeInfo) {
+        return decimalFormat.format(timeInfo._1) + " ms";
     }
 
     private void releaseFractalPainter() {
@@ -349,7 +363,7 @@ public class MainController {
         Clock clock = new Clock();
         paintImageOnCanvas();
         System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms");
-        refreshEventLabel(timeInfo);
+        refreshTimeInfoLabel(timeInfo);
     }
 
     private FractalPainterDevice getCurrentDeviceType() {
@@ -357,7 +371,7 @@ public class MainController {
     }
 
     private FractalPainter createFractalPainter() {
-        if (getCurrentDeviceType().equals(FractalPainterDevice.CUDA_GPU)) {
+        if (getCurrentDeviceType() == FractalPainterDevice.CUDA_GPU) {
             return createCudaFractalPainter();
         }
         return createCpuFractalPainter();
