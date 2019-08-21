@@ -63,7 +63,6 @@ public class MainController {
     private DecimalFormat decimalFormat;
     private CpuInfo cpuInfo;
 
-
     private ToggleGroup deviceGroup;
 
     @FXML
@@ -82,6 +81,8 @@ public class MainController {
     private Label deviceInfoLabel;
     @FXML
     private Label timeInfoLabel;
+    @FXML
+    private Label canvasSizeInfoLabel;
     @FXML
     private CheckMenuItem deviceInfoMenuItem;
     @FXML
@@ -112,6 +113,7 @@ public class MainController {
         initTimeInfoMenuItem();
         initInvertColorsMenuItem();
         initResizeEventHandler();
+        refreshCanvasSizeInfoLabel();
     }
 
     @FXML
@@ -292,6 +294,7 @@ public class MainController {
         if (windowResized) {
             canvasWidth = newCanvasWidth;
             canvasHeight = newCanvasHeight;
+            refreshCanvasSizeInfoLabel();
             initImageArray();
             initCanvas();
             patternPainter = new PatternPainter(canvasWidth, argb);
@@ -334,6 +337,10 @@ public class MainController {
     private void refreshTimeInfoLabel(Tuple2<Float, Float> timeInfo) {
         String text = createTimeInfoText(timeInfo);
         timeInfoLabel.setText(text);
+    }
+
+    private void refreshCanvasSizeInfoLabel() {
+        canvasSizeInfoLabel.setText(canvasWidth + "x" + canvasHeight + " px");
     }
 
     private String createTimeInfoText(Tuple2<Float, Float> timeInfo) {

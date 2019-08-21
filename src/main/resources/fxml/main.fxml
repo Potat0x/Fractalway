@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <GridPane fx:id="mainPane" alignment="TOP_RIGHT" prefHeight="368.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.potat0x.fractalway.MainController">
    <columnConstraints>
@@ -45,10 +46,19 @@
             </Menu>
          </menus>
       </MenuBar>
-      <Label fx:id="timeInfoLabel" alignment="BOTTOM_RIGHT" blendMode="DIFFERENCE" text="time info" textAlignment="RIGHT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
-         <GridPane.margin>
-            <Insets bottom="2.0" right="4.0" />
-         </GridPane.margin>
-      </Label>
+      <VBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+         <children>
+            <Label fx:id="canvasSizeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" text="canvas size info" textAlignment="RIGHT" textFill="WHITE">
+               <VBox.margin>
+                  <Insets bottom="2.0" right="4.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="timeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" text="time info" textAlignment="RIGHT" textFill="WHITE">
+               <VBox.margin>
+                  <Insets bottom="2.0" right="4.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
    </children>
 </GridPane>
