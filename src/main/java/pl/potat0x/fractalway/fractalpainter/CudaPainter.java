@@ -10,6 +10,7 @@ import jcuda.driver.CUdeviceptr;
 import jcuda.driver.CUfunction;
 import jcuda.driver.CUmodule;
 import jcuda.runtime.dim3;
+import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.clock.CudaEventClock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
@@ -42,7 +43,7 @@ public class CudaPainter implements FractalPainter {
         this.ptxFileName = new File(CudaPainter.class.getResource(kernelFilename).getFile()).getAbsolutePath();
         this.functionName = functionName;
         arraySizeInBytes = imageWidth * imageHeight * Sizeof.INT;
-        threadsPerBlock = 32;
+        threadsPerBlock = Config.getInt("cuda-threads-per-block");
         prepareCuda();
     }
 
@@ -55,7 +56,7 @@ public class CudaPainter implements FractalPainter {
 
     @Override
     public Tuple2<Float, Float> paint(int[] argb, Fractal fractal) {
-        System.out.println("CudaPainter.paint");
+        System.out.println("CudaPainter.paint, threadsPerBlock=" + threadsPerBlock);
 
         Pointer kernelParameters = prepareKernelParams(fractal, getFractalSpecificParams(fractal));
 

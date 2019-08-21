@@ -1,8 +1,9 @@
 package pl.potat0x.fractalway.fractal;
 
+import pl.potat0x.fractalway.utils.Config;
+
 public class Fractal {
-    public static final int MIN_ITER = 1;
-    public static final int MAX_ITER = 2000;
+    private final int upperIterLimit;
 
     public final FractalType type;
     public int iterations = 160;
@@ -19,6 +20,7 @@ public class Fractal {
 
     public Fractal(FractalType type) {
         this.type = type;
+        upperIterLimit = Config.getInt("iterations-upper-limit");
     }
 
     public void moveFractalPointToImageCenter(double imageWidth, double imageHeight, double x, double y) {
@@ -29,11 +31,12 @@ public class Fractal {
     }
 
     public void increaseIterations() {
-        iterations = Math.min(++iterations, MAX_ITER);
+        iterations = Math.min(++iterations, upperIterLimit);
     }
 
     public void decreaseIterations() {
-        iterations = Math.max(--iterations, MIN_ITER);
+        int lowerIterLimit = 1;
+        iterations = Math.max(--iterations, lowerIterLimit);
     }
 
     public void zoomIn() {

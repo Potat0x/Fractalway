@@ -3,6 +3,7 @@ package pl.potat0x.fractalway.fractalpainter;
 import io.vavr.Function4;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
@@ -26,7 +27,6 @@ public class CpuPainter implements FractalPainter {
 
     @Override
     public Tuple2<Float, Float> paint(int[] argb, Fractal fractal) {
-        int numberOfThreads = 8;
         System.out.println("CpuPainter.paint");
         Function4<int[], Fractal, Integer, Integer, Void> fractalFunction = Match(fractal.type).of(
                 Case($(is(FractalType.MANDELBROT_SET)), Function4.of(this::mandelbrotSet)),
@@ -35,7 +35,7 @@ public class CpuPainter implements FractalPainter {
         );
 
         Clock clock = new Clock();
-        makeCalculations(numberOfThreads, argb, fractal, fractalFunction);
+        makeCalculations(Config.getInt("cpu-threads"), argb, fractal, fractalFunction);
         return Tuple.of(clock.getElapsedTime() * 1f, 0f);
     }
 

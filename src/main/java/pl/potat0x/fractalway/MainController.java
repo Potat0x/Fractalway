@@ -25,6 +25,7 @@ import pl.potat0x.fractalway.fractalpainter.FractalPainter;
 import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.utils.PatternPainter;
 import pl.potat0x.fractalway.utils.StringCapitalizer;
 import pl.potat0x.fractalway.utils.WindowBuilder;
@@ -89,8 +90,8 @@ public class MainController {
     private CheckMenuItem timeInfoMenuItem;
 
     public MainController() {
-        canvasWidth = 820;
-        canvasHeight = 620;
+        canvasWidth = Config.getInt("canvas-width");
+        canvasHeight = Config.getInt("canvas-height");
         initImageArray();
         initDecimalFormatter();
         fractal = new Fractal(FractalType.MANDELBROT_SET);
@@ -362,7 +363,7 @@ public class MainController {
         Tuple2<Float, Float> timeInfo = paintFractal();
         Clock clock = new Clock();
         paintImageOnCanvas();
-        System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms");
+        System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms (" + canvasWidth + "x" + canvasHeight + " px)");
         refreshTimeInfoLabel(timeInfo);
     }
 

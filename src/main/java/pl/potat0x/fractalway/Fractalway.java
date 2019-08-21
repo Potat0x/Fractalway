@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import pl.potat0x.fractalway.utils.Config;
 
 import static jcuda.driver.JCudaDriver.cuInit;
 import static jcuda.nvrtc.JNvrtc.setExceptionsEnabled;
@@ -15,7 +16,7 @@ public class Fractalway extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main.fxml"));
         primaryStage.setTitle("Fractalway");
-        primaryStage.setScene(new Scene(root, 820, 620));
+        primaryStage.setScene(new Scene(root, Config.getInt("canvas-width"), Config.getInt("canvas-height")));
         primaryStage.show();
     }
 

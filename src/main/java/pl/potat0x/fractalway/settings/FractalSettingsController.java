@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import pl.potat0x.fractalway.utils.Action;
+import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.validation.DoubleValidator;
 import pl.potat0x.fractalway.validation.IntegerValidator;
 
@@ -36,9 +37,10 @@ public class FractalSettingsController extends BaseController {
 
     @Override
     protected void setCorrectnessWatchers() {
+        int lowerIterLimit = 1;
         createFormCorrectnessWatcher()
                 .registerFields(new DoubleValidator(), realPartField, imaginaryPartField)
-                .registerFields(new IntegerValidator(Fractal.MIN_ITER, Fractal.MAX_ITER), iterationsField);
+                .registerFields(new IntegerValidator(lowerIterLimit, Config.getInt("iterations-upper-limit")), iterationsField);
     }
 
     private void configureForm() {
