@@ -44,6 +44,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
                </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Save">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#saveAsImage" text="As image" />
+               </items>
+            </Menu>
          </menus>
       </MenuBar>
       <VBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">

@@ -16,6 +16,8 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
@@ -25,6 +27,7 @@ import pl.potat0x.fractalway.fractalpainter.FractalPainter;
 import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.ArrayToImageWriter;
 import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.utils.PatternPainter;
 import pl.potat0x.fractalway.utils.StringCapitalizer;
@@ -34,11 +37,14 @@ import pl.potat0x.fractalway.utils.device.CudaDeviceInfo;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.io.File;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
@@ -162,6 +168,26 @@ public class MainController {
     @FXML
     private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
         openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, this::drawFractal), "Fractal settings");
+    }
+
+    @FXML
+    private void saveAsImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save as image");
+        fileChooser.getExtensionFilters().addAll(createExtensionFilters());
+
+        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
+        if (file != null) {
+            String fileExtension = fileChooser.getSelectedExtensionFilter().getDescription();
+            new ArrayToImageWriter().saveImage(argb, canvasWidth, canvasHeight, file, fileExtension);
+        }
+    }
+
+    private List<ExtensionFilter> createExtensionFilters() {
+        List<String> extensions = Arrays.asList("png", "gif", "jpeg", "bmp");
+        return extensions.stream().map(e ->
+                new ExtensionFilter(e.toUpperCase(), "*." + e.toLowerCase())
+        ).collect(Collectors.toList());
     }
 
     private void initImageArray() {
