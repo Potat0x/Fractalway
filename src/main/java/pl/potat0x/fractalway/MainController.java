@@ -70,6 +70,7 @@ public class MainController {
     private CpuInfo cpuInfo;
 
     private ToggleGroup deviceGroup;
+    private String imageDialogLastDirectory;
 
     @FXML
     private GridPane mainPane;
@@ -176,10 +177,17 @@ public class MainController {
         fileChooser.setTitle("Save as image");
         fileChooser.getExtensionFilters().addAll(createExtensionFilters());
 
+        if (imageDialogLastDirectory != null) {
+            fileChooser.setInitialDirectory(new File(imageDialogLastDirectory));
+        }
+
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
         if (file != null) {
             String fileExtension = fileChooser.getSelectedExtensionFilter().getDescription();
-            new ArrayToImageWriter().saveImage(argb, canvasWidth, canvasHeight, file, fileExtension);
+            boolean savingResult = new ArrayToImageWriter().saveImage(argb, canvasWidth, canvasHeight, file, fileExtension);
+            if (savingResult) {
+                imageDialogLastDirectory = file.getParent();
+            }
         }
     }
 
