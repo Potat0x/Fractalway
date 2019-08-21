@@ -2,6 +2,7 @@ package pl.potat0x.fractalway;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.control.Either;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -184,11 +185,23 @@ public class MainController {
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
         if (file != null) {
             String fileExtension = fileChooser.getSelectedExtensionFilter().getDescription();
-            boolean savingResult = new ArrayToImageWriter().saveImage(argb, canvasWidth, canvasHeight, file, fileExtension);
-            if (savingResult) {
+            Either<String, Void> savingResult = new ArrayToImageWriter().saveImage(argb, canvasWidth, canvasHeight, file, fileExtension);
+            if (savingResult.isRight()) {
                 imageDialogLastDirectory = file.getParent();
             }
+            showSavingResultAlert(savingResult, file.getPath());
         }
+    }
+
+    private void showSavingResultAlert(Either<String, Void> savingResult, String filePath) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Image saved to\n" + filePath, ButtonType.OK);
+        if (savingResult.isLeft()) {
+            alert.setAlertType(Alert.AlertType.ERROR);
+            alert.setContentText("Saving image to\n" + filePath + "\nfailed.\n" + savingResult.getLeft() + ".");
+        }
+        alert.setTitle("Fractalway");
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 
     private List<ExtensionFilter> createExtensionFilters() {
