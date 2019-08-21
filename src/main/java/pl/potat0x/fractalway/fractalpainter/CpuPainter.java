@@ -6,6 +6,10 @@ import io.vavr.Tuple2;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
+import pl.potat0x.fractalway.utils.IntervalDistributor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
@@ -22,6 +26,7 @@ public class CpuPainter implements FractalPainter {
 
     @Override
     public Tuple2<Float, Float> paint(int[] argb, Fractal fractal) {
+        int numberOfThreads = 8;
         System.out.println("CpuPainter.paint");
         Function4<int[], Fractal, Integer, Integer, Void> fractalFunction = Match(fractal.type).of(
                 Case($(is(FractalType.MANDELBROT_SET)), Function4.of(this::mandelbrotSet)),
@@ -30,12 +35,33 @@ public class CpuPainter implements FractalPainter {
         );
 
         Clock clock = new Clock();
-        makeCalculation(argb, fractal, fractalFunction);
+        makeCalculations(numberOfThreads, argb, fractal, fractalFunction);
         return Tuple.of(clock.getElapsedTime() * 1f, 0f);
     }
 
-    private void makeCalculation(int[] argb, Fractal fractal, Function4<int[], Fractal, Integer, Integer, Void> fractalFunction) {
-        for (int y = 0; y < height; y++) {
+    private void makeCalculations(int numberOfThreads, int[] argb, Fractal fractal, Function4<int[], Fractal, Integer, Integer, Void> fractalFunction) {
+        //noinspection SuspiciousNameCombination
+        List<Tuple2<Integer, Integer>> sections = IntervalDistributor.cutIntervalToSimilarSections(numberOfThreads, height);
+
+        List<Thread> threads = sections.stream()
+                .map(section -> {
+                    Thread thread = new Thread(() -> calculateFractalArea(section, argb, fractal, fractalFunction));
+                    thread.setDaemon(true);
+                    thread.start();
+                    return thread;
+                }).collect(Collectors.toList());
+
+        threads.forEach(t -> {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void calculateFractalArea(Tuple2<Integer, Integer> rangeY, int[] argb, Fractal fractal, Function4<int[], Fractal, Integer, Integer, Void> fractalFunction) {
+        for (int y = rangeY._1; y < rangeY._2; y++) {
             for (int x = 0; x < width; x++) {
                 fractalFunction.apply(argb, fractal, x, y);
             }
