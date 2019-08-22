@@ -162,7 +162,12 @@ public class MainController {
                 Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
                 Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut())),
                 Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> fractal.increaseIterations())),
-                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations()))
+                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations())),
+                Case($(is(KeyCode.S)), o -> run(() -> {
+                    if (keyEvent.isControlDown()) {
+                        saveAsImage();
+                    }
+                }))
         ).peek(x -> drawFractal());
     }
 
