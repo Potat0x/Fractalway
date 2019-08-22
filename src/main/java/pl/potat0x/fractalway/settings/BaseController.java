@@ -13,7 +13,7 @@ import pl.potat0x.fractalway.validation.TextFieldGroupCorrectnessWatcher;
 
 abstract class BaseController {
     private Node windowNode;
-    private final Action setOnFormSubmitted;
+    protected final Action onFormSubmitted;
     private boolean isSubmittingBlocked;
 
     @FXML
@@ -25,8 +25,8 @@ abstract class BaseController {
 
     protected abstract void setCorrectnessWatchers();
 
-    BaseController(Action setOnFormSubmitted) {
-        this.setOnFormSubmitted = setOnFormSubmitted != null ? setOnFormSubmitted : Action.EMPTY;
+    BaseController(Action onFormSubmitted) {
+        this.onFormSubmitted = onFormSubmitted != null ? onFormSubmitted : Action.EMPTY;
     }
 
     void initialize(Node windowNode) {
@@ -44,7 +44,7 @@ abstract class BaseController {
     protected void handleKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getCode() == KeyCode.ENTER && isSubmittingUnblocked()) {
             readForm();
-            setOnFormSubmitted.execute();
+            onFormSubmitted.execute();
             if (keyEvent.isControlDown()) {
                 closeWindow();
             }

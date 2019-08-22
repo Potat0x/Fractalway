@@ -20,12 +20,14 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import pl.potat0x.fractalway.clock.Clock;
+import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.fractalpainter.CpuPainter;
 import pl.potat0x.fractalway.fractalpainter.CudaPainter;
 import pl.potat0x.fractalway.fractalpainter.FractalPainter;
 import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
+import pl.potat0x.fractalway.settings.ColorSchemeSettingsController;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
 import pl.potat0x.fractalway.utils.ArrayToImageWriter;
@@ -72,6 +74,7 @@ public class MainController {
 
     private ToggleGroup deviceGroup;
     private String imageDialogLastDirectory;
+    private ArgbColorScheme colorScheme;
 
     @FXML
     private GridPane mainPane;
@@ -107,6 +110,7 @@ public class MainController {
         patternPainter = new PatternPainter(canvasWidth, argb);
         invertFractalColors = false;
         cpuInfo = new CpuInfo();
+        colorScheme = new ArgbColorScheme();
     }
 
     @FXML
@@ -170,6 +174,11 @@ public class MainController {
     @FXML
     private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
         openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, this::drawFractal), "Fractal settings");
+    }
+
+    @FXML
+    private void showColorSchemeSettingsWindow(ActionEvent actionEvent) throws IOException {
+        openWindow("/fxml/color_settings.fxml", new ColorSchemeSettingsController(colorScheme, this::drawFractal), "Color scheme");
     }
 
     @FXML
@@ -471,9 +480,11 @@ public class MainController {
 
     private int createColorArgb(int x, int y) {
         int index = calculateIndex(x, y);
-        int r = (argb[index] << 8) >>> 24;
-        int g = (argb[index] << 16) >>> 24;
-        int b = (argb[index] << 24) >>> 24;
+
+        ArgbColorScheme cs = colorScheme;
+        int r = (argb[index] << cs.rLeftShift) >>> cs.rRightShift;
+        int g = (argb[index] << cs.gLeftShift) >>> cs.gRightShift;
+        int b = (argb[index] << cs.bLeftShift) >>> cs.bRightShift;
 
         if (invertFractalColors) {
             r = 255 - r;
