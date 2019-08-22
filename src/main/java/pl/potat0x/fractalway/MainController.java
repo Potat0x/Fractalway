@@ -471,9 +471,9 @@ public class MainController {
 
     private int createColorArgb(int x, int y) {
         int index = calculateIndex(x, y);
-        int r = (argb[index]) >>> 16;
-        int g = (argb[index] << 8) >>> 16;
-        int b = (argb[index] << 16) >>> 16;
+        int r = (argb[index] << 8) >>> 24;
+        int g = (argb[index] << 16) >>> 24;
+        int b = (argb[index] << 24) >>> 24;
 
         if (invertFractalColors) {
             r = 255 - r;
