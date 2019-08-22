@@ -12,6 +12,10 @@ public final class Config {
         return Integer.parseInt(properties.get().get(propertyName).toString());
     }
 
+    public static boolean getBoolean(String propertyName) {
+        return Boolean.parseBoolean(properties.get().get(propertyName).toString());
+    }
+
     private static final Function0<Properties> properties = Function0.of(Config::loadProperties).memoized();
 
     private static Properties loadProperties() {

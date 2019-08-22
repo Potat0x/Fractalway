@@ -272,6 +272,7 @@ public class MainController {
 
         deviceGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             initDeviceInfoLabel(getCurrentDeviceType());
+            releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
         });
@@ -442,7 +443,7 @@ public class MainController {
                 Case($(is(FractalType.JULIA_SET)), Tuple.of("/kernels/juliaSet.ptx", "juliaSet")),
                 Case($(is(FractalType.BURNING_SHIP)), Tuple.of("/kernels/burningShip.ptx", "burningShip"))
         );
-        return new CudaPainter(canvasWidth, canvasHeight, kernelFileAndName._1, kernelFileAndName._2);
+        return new CudaPainter(canvasWidth, canvasHeight, kernelFileAndName._1, kernelFileAndName._2, Config.getBoolean("cuda-use-pinned-memory"));
     }
 
     private void paintImageOnCanvas() {

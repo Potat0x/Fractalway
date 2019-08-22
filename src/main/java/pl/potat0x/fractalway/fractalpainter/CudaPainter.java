@@ -32,16 +32,18 @@ public class CudaPainter implements FractalPainter {
     private final String ptxFileName;
     private final String functionName;
     private final int threadsPerBlock;
+    private final boolean usePinnedMemory;
     private CUdeviceptr deviceOutputArgb;
     private CUfunction function;
     private CUmodule module;
     private CUcontext context;
 
-    public CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName) {
+    public CudaPainter(int imageWidth, int imageHeight, String kernelFilename, String functionName, boolean usePinnedMemory) {
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         this.ptxFileName = new File(CudaPainter.class.getResource(kernelFilename).getFile()).getAbsolutePath();
         this.functionName = functionName;
+        this.usePinnedMemory = usePinnedMemory;
         arraySizeInBytes = imageWidth * imageHeight * Sizeof.INT;
         threadsPerBlock = Config.getInt("cuda-threads-per-block");
         prepareCuda();
@@ -98,12 +100,21 @@ public class CudaPainter implements FractalPainter {
         cuModuleGetFunction(function, module, functionName);
 
         deviceOutputArgb = new CUdeviceptr();
-        cuMemAlloc(deviceOutputArgb, arraySizeInBytes);
+
+        if (usePinnedMemory) {
+            cuMemAllocHost(deviceOutputArgb, arraySizeInBytes);
+        } else {
+            cuMemAlloc(deviceOutputArgb, arraySizeInBytes);
+        }
     }
 
     @Override
     public void destroy() {
-        cuMemFree(deviceOutputArgb);
+        if (usePinnedMemory) {
+            cuMemFreeHost(deviceOutputArgb);
+        } else {
+            cuMemFree(deviceOutputArgb);
+        }
         cuModuleUnload(module);
         cuCtxDestroy(context);
     }
