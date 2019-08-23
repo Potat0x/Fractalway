@@ -1,4 +1,4 @@
-package pl.potat0x.fractalway.utils;
+package pl.potat0x.fractalway.utils.math;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -10,8 +10,8 @@ public class IntervalDistributor {
     public static List<Tuple2<Integer, Integer>> cutIntervalToSimilarSections(int numberOfSections, int intervalWidth) {
 
         List<Tuple2<Integer, Integer>> sections = new ArrayList<>();
-        for (int seectionNumber = 0; seectionNumber < numberOfSections; seectionNumber++) {
-            sections.add(calculateNthSection(seectionNumber, numberOfSections, intervalWidth));
+        for (int sectionNumber = 0; sectionNumber < numberOfSections; sectionNumber++) {
+            sections.add(calculateNthSection(sectionNumber, numberOfSections, intervalWidth));
         }
 
         int sectionShift = 0;

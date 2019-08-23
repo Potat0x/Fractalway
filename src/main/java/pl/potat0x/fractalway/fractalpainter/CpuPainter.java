@@ -7,7 +7,7 @@ import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
-import pl.potat0x.fractalway.utils.IntervalDistributor;
+import pl.potat0x.fractalway.utils.math.IntervalDistributor;
 
 import java.util.List;
 import java.util.stream.Collectors;

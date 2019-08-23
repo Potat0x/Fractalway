@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static pl.potat0x.fractalway.utils.IntervalDistributor.cutIntervalToSimilarSections;
+import static pl.potat0x.fractalway.utils.math.IntervalDistributor.cutIntervalToSimilarSections;
 
 public class IntervalDistributorTest {
 
