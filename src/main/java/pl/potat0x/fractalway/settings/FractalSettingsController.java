@@ -28,7 +28,7 @@ public class FractalSettingsController extends BaseController {
 
     public FractalSettingsController(Fractal fractal, Action onFormSubmitted) {
         super(onFormSubmitted);
-        this.sliderValueConverter = new ParabolicScaleConverter(Config.getInt("iterations-upper-limit"), Config.getDouble("iterations-slider-scale-exponent"));
+        this.sliderValueConverter = new ParabolicScaleConverter(Config.getInt("iterations-upper-limit"), Config.getDouble("settings-iterations-slider-scale-exp"));
         this.fractal = fractal;
     }
 
@@ -68,7 +68,7 @@ public class FractalSettingsController extends BaseController {
         fractal.iterations = readInteger(iterationsField);
         fractal.complexParamRe = readDouble(realPartField);
         fractal.complexParamIm = readDouble(imaginaryPartField);
-        updateIterationsSliderPosition();
+        updateIterationsSlider();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class FractalSettingsController extends BaseController {
         setText(iterationsField, fractal.iterations);
         setText(realPartField, fractal.complexParamRe);
         setText(imaginaryPartField, fractal.complexParamIm);
-        updateIterationsSliderPosition();
+        updateIterationsSlider();
     }
 
     private void updateFractalIterations(double x) {
@@ -84,7 +84,7 @@ public class FractalSettingsController extends BaseController {
         fractal.iterations = (int) Math.max(iterations, 1);
     }
 
-    private void updateIterationsSliderPosition() {
+    private void updateIterationsSlider() {
         iterationsSlider.setValue(sliderValueConverter.parabolicToLinear(fractal.iterations));
     }
 }

@@ -30,6 +30,7 @@ import pl.potat0x.fractalway.fractalpainter.FractalPainterDevice;
 import pl.potat0x.fractalway.settings.ColorSchemeSettingsController;
 import pl.potat0x.fractalway.settings.FractalSettingsController;
 import pl.potat0x.fractalway.settings.NavigationSettingsController;
+import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.utils.ArrayToImageWriter;
 import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.utils.PatternPainter;
@@ -37,6 +38,7 @@ import pl.potat0x.fractalway.utils.StringCapitalizer;
 import pl.potat0x.fractalway.utils.WindowBuilder;
 import pl.potat0x.fractalway.utils.device.CpuInfo;
 import pl.potat0x.fractalway.utils.device.CudaDeviceInfo;
+import pl.potat0x.fractalway.utils.math.ParabolicScaleConverter;
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -70,11 +72,12 @@ public class MainController {
     private FractalPainter painter;
     private boolean invertFractalColors;
     private DecimalFormat decimalFormat;
-    private CpuInfo cpuInfo;
+    private final CpuInfo cpuInfo;
 
     private ToggleGroup deviceGroup;
     private String imageDialogLastDirectory;
-    private ArgbColorScheme colorScheme;
+    private final ArgbColorScheme colorScheme;
+    private final ParabolicScaleConverter sliderValueConverter;
 
     @FXML
     private GridPane mainPane;
@@ -95,6 +98,12 @@ public class MainController {
     @FXML
     private Label canvasSizeInfoLabel;
     @FXML
+    private Label iterationsInfoLabel;
+    @FXML
+    private Slider iterationsSlider;
+    @FXML
+    private CheckMenuItem iterationsSliderMenuItem;
+    @FXML
     private CheckMenuItem deviceInfoMenuItem;
     @FXML
     private CheckMenuItem invertColorsMenuItem;
@@ -111,6 +120,7 @@ public class MainController {
         invertFractalColors = false;
         cpuInfo = new CpuInfo();
         colorScheme = new ArgbColorScheme();
+        sliderValueConverter = new ParabolicScaleConverter(Config.getInt("iterations-upper-limit"), Config.getDouble("main-iterations-slider-scale-exp"));
     }
 
     @FXML
@@ -126,6 +136,8 @@ public class MainController {
         initInvertColorsMenuItem();
         initResizeEventHandler();
         refreshCanvasSizeInfoLabel();
+        initIterationsSliderAndLabel();
+        initIterationsSliderMenuItem();
     }
 
     @FXML
@@ -161,8 +173,14 @@ public class MainController {
                 Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
                 Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
                 Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut())),
-                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> fractal.increaseIterations())),
-                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations())),
+                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> {
+                    fractal.increaseIterations();
+                    updateIterationsSlider();
+                })),
+                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> {
+                    fractal.decreaseIterations();
+                    updateIterationsSlider();
+                })),
                 Case($(is(KeyCode.S)), o -> run(() -> {
                     if (keyEvent.isControlDown()) {
                         saveAsImage();
@@ -178,7 +196,11 @@ public class MainController {
 
     @FXML
     private void showFractalSettingsWindow(ActionEvent actionEvent) throws IOException {
-        openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, this::drawFractal), "Fractal settings");
+        Action drawFractal = () -> {
+            updateIterationsSlider();
+            drawFractal();
+        };
+        openWindow("/fxml/fractal_settings.fxml", new FractalSettingsController(fractal, drawFractal), "Fractal settings");
     }
 
     @FXML
@@ -205,6 +227,44 @@ public class MainController {
             }
             showSavingResultAlert(savingResult, file.getPath());
         }
+    }
+
+    private void initIterationsSliderMenuItem() {
+        iterationsSliderMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            iterationsSlider.setVisible(newValue);
+            iterationsInfoLabel.setVisible(newValue);
+        });
+        iterationsSliderMenuItem.setSelected(true);
+    }
+
+    private void initIterationsSliderAndLabel() {
+        int iterLimit = Config.getInt("iterations-upper-limit");
+        iterationsSlider.setMax(iterLimit);
+        iterationsSlider.setMajorTickUnit(iterLimit);
+        updateIterationsSlider();
+        updateIterationsInfoLabel();
+
+        iterationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (sliderValueConverter.checkIfParabolicValuesAreDifferentAsIntegers(oldValue.doubleValue(), newValue.doubleValue())) {
+                updateFractalIterations(newValue.doubleValue());
+                updateIterationsInfoLabel();
+                drawFractal();
+            }
+            canvas.requestFocus();
+        });
+    }
+
+    private void updateIterationsInfoLabel() {
+        iterationsInfoLabel.setText(String.valueOf(fractal.iterations));
+    }
+
+    private void updateFractalIterations(double x) {
+        double iterations = Math.round(sliderValueConverter.linearToParabolic(x));
+        fractal.iterations = (int) Math.max(iterations, 1);
+    }
+
+    private void updateIterationsSlider() {
+        iterationsSlider.setValue(sliderValueConverter.parabolicToLinear(fractal.iterations));
     }
 
     private void showSavingResultAlert(Either<String, Void> savingResult, String filePath) {

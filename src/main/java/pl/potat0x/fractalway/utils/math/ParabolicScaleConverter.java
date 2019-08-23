@@ -29,4 +29,10 @@ public class ParabolicScaleConverter {
     public double parabolicToLinear(double parabolicValue) {
         return Math.pow(parabolicValue, 1.0 / exp) / a;
     }
+
+    public boolean checkIfParabolicValuesAreDifferentAsIntegers(double a, double b) {
+        int parabolicValA = (int) Math.round(linearToParabolic(a));
+        int parabolicValB = (int) Math.round(linearToParabolic(b));
+        return parabolicValA != parabolicValB;
+    }
 }

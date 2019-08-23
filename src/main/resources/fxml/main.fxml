@@ -7,10 +7,13 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <GridPane fx:id="mainPane" alignment="TOP_RIGHT" prefHeight="368.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.potat0x.fractalway.MainController">
    <columnConstraints>
@@ -33,6 +36,7 @@
             <Menu mnemonicParsing="false" text="View">
                <items>
                   <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />
+                  <CheckMenuItem fx:id="iterationsSliderMenuItem" mnemonicParsing="false" text="Iterations slider" />
                   <CheckMenuItem fx:id="deviceInfoMenuItem" mnemonicParsing="false" text="Device info" />
                   <CheckMenuItem fx:id="timeInfoMenuItem" mnemonicParsing="false" text="Time info" />
                   <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
@@ -52,19 +56,35 @@
             </Menu>
          </menus>
       </MenuBar>
-      <VBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+      <VBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" pickOnBounds="false" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
          <children>
-            <Label fx:id="canvasSizeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" text="canvas size info" textAlignment="RIGHT" textFill="WHITE">
+            <Label fx:id="canvasSizeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" focusTraversable="false" pickOnBounds="false" text="canvas size info" textAlignment="RIGHT" textFill="WHITE">
                <VBox.margin>
                   <Insets bottom="2.0" right="4.0" />
                </VBox.margin>
             </Label>
-            <Label fx:id="timeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" text="time info" textAlignment="RIGHT" textFill="WHITE">
+            <Label fx:id="timeInfoLabel" alignment="CENTER_RIGHT" blendMode="DIFFERENCE" focusTraversable="false" pickOnBounds="false" text="time info" textAlignment="RIGHT" textFill="WHITE">
                <VBox.margin>
                   <Insets bottom="2.0" right="4.0" />
                </VBox.margin>
             </Label>
          </children>
       </VBox>
+      <Label fx:id="iterationsInfoLabel" blendMode="DIFFERENCE" pickOnBounds="false" text="iterations info" textFill="WHITE">
+         <padding>
+            <Insets left="15.0" />
+         </padding>
+         <font>
+            <Font name="System Bold" size="11.0" />
+         </font>
+      </Label>
+      <Slider fx:id="iterationsSlider" blendMode="SRC_ATOP" focusTraversable="false" majorTickUnit="100.0" min="1.0" orientation="VERTICAL" pickOnBounds="false" value="1.0" GridPane.halignment="LEFT">
+         <GridPane.margin>
+            <Insets bottom="8.0" top="32.0" />
+         </GridPane.margin>
+         <tooltip>
+            <Tooltip text="iterations" />
+         </tooltip>
+      </Slider>
    </children>
 </GridPane>
