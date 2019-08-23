@@ -3,11 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="220.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox fx:id="complexParamContainer" spacing="3.0">
          <children>
@@ -25,8 +26,23 @@
             </VBox>
          </children>
       </HBox>
-      <Label text="Iterations" />
-      <TextField fx:id="iterationsField" onKeyPressed="#handleKeyEvent" prefHeight="25.0" prefWidth="92.0" />
+      <Label text="Iterations">
+         <VBox.margin>
+            <Insets top="1.0" />
+         </VBox.margin></Label>
+      <HBox alignment="CENTER_LEFT" spacing="3.0">
+         <children>
+            <Slider fx:id="iterationsSlider" blockIncrement="0.0" majorTickUnit="1.0" max="10.0" min="1.0" minWidth="-Infinity" minorTickCount="0" prefHeight="16.0" prefWidth="107.0" snapToTicks="true" value="1.0">
+               <padding>
+                  <Insets bottom="2.0" />
+               </padding>
+            </Slider>
+            <TextField fx:id="iterationsField" onKeyPressed="#handleKeyEvent" prefHeight="25.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </TextField>
+         </children></HBox>
       <HBox prefHeight="0.0" prefWidth="174.0" spacing="3.0">
          <children>
             <Button fx:id="okButton" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleOkButton" prefWidth="200.0" text="OK" HBox.hgrow="ALWAYS" />
