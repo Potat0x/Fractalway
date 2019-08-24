@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,8 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<GridPane prefWidth="581.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane prefWidth="556.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -23,9 +24,53 @@
    <children>
       <VBox spacing="3.0">
          <children>
-            <HBox alignment="CENTER" spacing="2.0">
+            <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Label text="R = " textFill="RED">
+                  <Button mnemonicParsing="false" onAction="#setRandomColorSchemeValues" text="Random">
+                     <HBox.margin>
+                        <Insets right="2.0" />
+                     </HBox.margin>
+                  </Button>
+                  <CheckBox fx:id="randomBitshift" mnemonicParsing="false" selected="true">
+                     <tooltip>
+                        <Tooltip text="Random bitshift" />
+                     </tooltip>
+                  </CheckBox>
+                  <Label disable="true" opacity="0.0" text=")×">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <CheckBox fx:id="randomLeftMultiplication" mnemonicParsing="false">
+                     <tooltip>
+                        <Tooltip text="Random this column" />
+                     </tooltip>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </CheckBox>
+                  <Label disable="true" opacity="0.0" text="×">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <CheckBox fx:id="randomRightMultiplication" mnemonicParsing="false">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <tooltip>
+                        <Tooltip text="Random this column" />
+                     </tooltip>
+                  </CheckBox>
+               </children>
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </HBox>
+            <Separator />
+            <HBox alignment="CENTER_RIGHT" spacing="2.0">
+               <children>
+                  <Label minWidth="-Infinity" text="R = " textFill="RED">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -33,12 +78,12 @@
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Label text="((argb&lt;&lt;">
+                  <Label minWidth="-Infinity" text="((argb&lt;&lt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="redLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="redLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -46,19 +91,19 @@
                         <Tooltip text="Bitshift left" />
                      </tooltip>
                   </Slider>
-                  <Label text=")&gt;&gt;&gt;">
+                  <Label minWidth="-Infinity" text=")&gt;&gt;&gt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="redRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="redRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <tooltip>
                         <Tooltip text="Bitshift right" />
                      </tooltip>
                   </Slider>
                   <HBox spacing="2.0">
                      <children>
-                        <Label text=")×">
+                        <Label minWidth="-Infinity" text=")×">
                            <padding>
                               <Insets bottom="24.0" />
                            </padding>
@@ -68,7 +113,7 @@
                               <Tooltip text="Multiply by bitshift left value" />
                            </tooltip>
                         </CheckBox>
-                        <Label text="×" />
+                        <Label minWidth="-Infinity" text="×" />
                         <CheckBox fx:id="redRightMultiplication" mnemonicParsing="false">
                            <HBox.margin>
                               <Insets />
@@ -84,9 +129,9 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="38.0" prefWidth="581.0" spacing="2.0">
+            <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Label text="G = " textFill="LIME">
+                  <Label minWidth="-Infinity" text="G = " textFill="LIME">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -94,12 +139,12 @@
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Label text="((argb&lt;&lt;">
+                  <Label minWidth="-Infinity" text="((argb&lt;&lt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="greenLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="greenLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -107,12 +152,12 @@
                         <Tooltip text="Bitshift left" />
                      </tooltip>
                   </Slider>
-                  <Label text=")&gt;&gt;&gt;">
+                  <Label minWidth="-Infinity" text=")&gt;&gt;&gt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="greenRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="greenRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -122,7 +167,7 @@
                   </Slider>
                   <HBox spacing="2.0">
                      <children>
-                        <Label text=")×">
+                        <Label minWidth="-Infinity" text=")×">
                            <padding>
                               <Insets bottom="24.0" />
                            </padding>
@@ -132,7 +177,7 @@
                               <Tooltip text="Multiply by bitshift left value" />
                            </tooltip>
                         </CheckBox>
-                        <Label text="×" />
+                        <Label minWidth="-Infinity" text="×" />
                         <CheckBox fx:id="greenRightMultiplication" mnemonicParsing="false">
                            <HBox.margin>
                               <Insets />
@@ -148,9 +193,9 @@
                   </HBox>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="44.0" prefWidth="581.0" spacing="2.0">
+            <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Label text="B = " textFill="BLUE">
+                  <Label minWidth="-Infinity" text="B = " textFill="BLUE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -158,12 +203,12 @@
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Label text="((argb&lt;&lt;">
+                  <Label minWidth="-Infinity" text="((argb&lt;&lt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="blueLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="blueLeft" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" nodeOrientation="RIGHT_TO_LEFT" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -171,19 +216,19 @@
                         <Tooltip text="Bitshift left" />
                      </tooltip>
                   </Slider>
-                  <Label text=")&gt;&gt;&gt;">
+                  <Label minWidth="-Infinity" text=")&gt;&gt;&gt;">
                      <padding>
                         <Insets bottom="24.0" />
                      </padding>
                   </Label>
-                  <Slider fx:id="blueRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="blueRight" blockIncrement="1.0" majorTickUnit="8.0" max="24.0" minorTickCount="8" prefHeight="44.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS">
                      <tooltip>
                         <Tooltip text="Bitshift right" />
                      </tooltip>
                   </Slider>
                   <HBox spacing="2.0">
                      <children>
-                        <Label text=")×">
+                        <Label minWidth="-Infinity" text=")×">
                            <padding>
                               <Insets bottom="24.0" />
                            </padding>
@@ -193,7 +238,7 @@
                               <Tooltip text="Multiply by bitshift left value" />
                            </tooltip>
                         </CheckBox>
-                        <Label text="×" />
+                        <Label minWidth="-Infinity" text="×" />
                         <CheckBox fx:id="blueRightMultiplication" mnemonicParsing="false">
                            <HBox.margin>
                               <Insets />
@@ -211,8 +256,11 @@
             </HBox>
          </children>
          <padding>
-            <Insets bottom="5.0" top="10.0" />
+            <Insets bottom="5.0" top="2.0" />
          </padding>
       </VBox>
    </children>
+   <padding>
+      <Insets left="4.0" right="4.0" />
+   </padding>
 </GridPane>

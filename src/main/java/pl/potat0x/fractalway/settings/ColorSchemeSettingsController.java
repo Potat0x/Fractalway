@@ -12,6 +12,9 @@ public class ColorSchemeSettingsController extends BaseController {
     private final ArgbColorScheme colorScheme;
 
     @FXML
+    private CheckBox randomBitshift;
+
+    @FXML
     private Slider redLeft, redRight;
     @FXML
     private Slider greenLeft, greenRight;
@@ -19,11 +22,19 @@ public class ColorSchemeSettingsController extends BaseController {
     private Slider blueLeft, blueRight;
 
     @FXML
+    private CheckBox randomLeftMultiplication, randomRightMultiplication;
+
+    @FXML
     private CheckBox redLeftMultiplication, redRightMultiplication;
     @FXML
     private CheckBox greenLeftMultiplication, greenRightMultiplication;
     @FXML
     private CheckBox blueLeftMultiplication, blueRightMultiplication;
+
+    /*
+    Do not repaint fractal multiple times while updating multiple controls
+    */
+    private boolean listenersUnlocked = true;
 
     public ColorSchemeSettingsController(ArgbColorScheme colorScheme, Action onFormSubmitted) {
         super(onFormSubmitted);
@@ -53,6 +64,15 @@ public class ColorSchemeSettingsController extends BaseController {
         setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
     }
 
+    @FXML
+    private void setRandomColorSchemeValues() {
+        listenersUnlocked = false;
+        colorScheme.random(randomBitshift.isSelected(), randomLeftMultiplication.isSelected(), randomRightMultiplication.isSelected());
+        fillForm();
+        onFormSubmitted.execute();
+        listenersUnlocked = true;
+    }
+
     @Override
     protected void readForm() {
     }
@@ -80,15 +100,19 @@ public class ColorSchemeSettingsController extends BaseController {
 
     private void addListenerToCheckBox(CheckBox checkBox, Consumer<Boolean> consumer) {
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            consumer.accept(newValue);
-            onFormSubmitted.execute();
+            if (listenersUnlocked) {
+                consumer.accept(newValue);
+                onFormSubmitted.execute();
+            }
         });
     }
 
     private void addListenerToSlider(Slider slider, Consumer<Integer> consumer) {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            consumer.accept(newValue.intValue());
-            onFormSubmitted.execute();
+            if (listenersUnlocked) {
+                consumer.accept(newValue.intValue());
+                onFormSubmitted.execute();
+            }
         });
     }
 
