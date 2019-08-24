@@ -12,17 +12,18 @@ public class ColorSchemeSettingsController extends BaseController {
     private final ArgbColorScheme colorScheme;
 
     @FXML
-    private Slider redLeft;
+    private Slider redLeft, redRight;
     @FXML
-    private Slider redRight;
+    private Slider greenLeft, greenRight;
     @FXML
-    private Slider greenLeft;
+    private Slider blueLeft, blueRight;
+
     @FXML
-    private Slider greenRight;
+    private CheckBox redLeftMultiplication, redRightMultiplication;
     @FXML
-    private Slider blueLeft;
+    private CheckBox greenLeftMultiplication, greenRightMultiplication;
     @FXML
-    private Slider blueRight;
+    private CheckBox blueLeftMultiplication, blueRightMultiplication;
 
     public ColorSchemeSettingsController(ArgbColorScheme colorScheme, Action onFormSubmitted) {
         super(onFormSubmitted);
@@ -37,12 +38,19 @@ public class ColorSchemeSettingsController extends BaseController {
 
     @Override
     protected void fillForm() {
-        setSliderValue(redLeft, colorScheme.rLeftShift);
-        setSliderValue(redRight, colorScheme.rRightShift);
-        setSliderValue(greenLeft, colorScheme.gLeftShift);
-        setSliderValue(greenRight, colorScheme.gRightShift);
-        setSliderValue(blueLeft, colorScheme.bLeftShift);
-        setSliderValue(blueRight, colorScheme.bRightShift);
+        setSliderValue(redLeft, colorScheme.redLeftShift);
+        setSliderValue(redRight, colorScheme.redRightShift);
+        setSliderValue(greenLeft, colorScheme.greenLeftShift);
+        setSliderValue(greenRight, colorScheme.greenRightShift);
+        setSliderValue(blueLeft, colorScheme.blueLeftShift);
+        setSliderValue(blueRight, colorScheme.blueRightShift);
+
+        setCheckBoxValue(redLeftMultiplication, colorScheme.redLeftMultiplication);
+        setCheckBoxValue(redRightMultiplication, colorScheme.redRightMultiplication);
+        setCheckBoxValue(greenLeftMultiplication, colorScheme.greenLeftMultiplication);
+        setCheckBoxValue(greenRightMultiplication, colorScheme.greenRightMultiplication);
+        setCheckBoxValue(blueLeftMultiplication, colorScheme.blueLeftMultiplication);
+        setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
     }
 
     @Override
@@ -54,12 +62,27 @@ public class ColorSchemeSettingsController extends BaseController {
     }
 
     private void initValueListeners() {
-        addListenerToSlider(redLeft, newVal -> colorScheme.rLeftShift = newVal);
-        addListenerToSlider(redRight, newVal -> colorScheme.rRightShift = newVal);
-        addListenerToSlider(greenLeft, newVal -> colorScheme.gLeftShift = newVal);
-        addListenerToSlider(greenRight, newVal -> colorScheme.gRightShift = newVal);
-        addListenerToSlider(blueLeft, newVal -> colorScheme.bLeftShift = newVal);
-        addListenerToSlider(blueRight, newVal -> colorScheme.bRightShift = newVal);
+        addListenerToSlider(redLeft, newVal -> colorScheme.redLeftShift = newVal);
+        addListenerToSlider(redRight, newVal -> colorScheme.redRightShift = newVal);
+        addListenerToSlider(greenLeft, newVal -> colorScheme.greenLeftShift = newVal);
+        addListenerToSlider(greenRight, newVal -> colorScheme.greenRightShift = newVal);
+        addListenerToSlider(blueLeft, newVal -> colorScheme.blueLeftShift = newVal);
+        addListenerToSlider(blueRight, newVal -> colorScheme.blueRightShift = newVal);
+        addListenerToSlider(blueRight, newVal -> colorScheme.blueRightShift = newVal);
+
+        addListenerToCheckBox(redLeftMultiplication, newVal -> colorScheme.redLeftMultiplication = newVal);
+        addListenerToCheckBox(redRightMultiplication, newVal -> colorScheme.redRightMultiplication = newVal);
+        addListenerToCheckBox(greenLeftMultiplication, newVal -> colorScheme.greenLeftMultiplication = newVal);
+        addListenerToCheckBox(greenRightMultiplication, newVal -> colorScheme.greenRightMultiplication = newVal);
+        addListenerToCheckBox(blueLeftMultiplication, newVal -> colorScheme.blueLeftMultiplication = newVal);
+        addListenerToCheckBox(blueRightMultiplication, newVal -> colorScheme.blueRightMultiplication = newVal);
+    }
+
+    private void addListenerToCheckBox(CheckBox checkBox, Consumer<Boolean> consumer) {
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            consumer.accept(newValue);
+            onFormSubmitted.execute();
+        });
     }
 
     private void addListenerToSlider(Slider slider, Consumer<Integer> consumer) {
@@ -71,5 +94,9 @@ public class ColorSchemeSettingsController extends BaseController {
 
     private void setSliderValue(Slider slider, int value) {
         slider.setValue(value);
+    }
+
+    private void setCheckBoxValue(CheckBox checkBox, boolean value) {
+        checkBox.setSelected(value);
     }
 }

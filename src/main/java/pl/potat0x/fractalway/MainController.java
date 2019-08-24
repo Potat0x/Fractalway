@@ -370,7 +370,8 @@ public class MainController {
     }
 
     private void selectLastItemInToggleGroup(ToggleGroup group) {
-        group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
+//        group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
+        group.getToggles().get(0).setSelected(true);
     }
 
     private void initDeviceInfoLabel(FractalPainterDevice deviceType) {
@@ -562,9 +563,17 @@ public class MainController {
         int index = calculateIndex(x, y);
 
         ArgbColorScheme cs = colorScheme;
-        int r = (argb[index] << cs.rLeftShift) >>> cs.rRightShift;
-        int g = (argb[index] << cs.gLeftShift) >>> cs.gRightShift;
-        int b = (argb[index] << cs.bLeftShift) >>> cs.bRightShift;
+        int r = (argb[index] << cs.redLeftShift) >>> cs.redRightShift;
+        int g = (argb[index] << cs.greenLeftShift) >>> cs.greenRightShift;
+        int b = (argb[index] << cs.blueLeftShift) >>> cs.blueRightShift;
+
+        r = cs.redLeftMultiplication ? r * cs.redLeftShift : r;
+        g = cs.greenLeftMultiplication ? g * cs.greenLeftShift : g;
+        b = cs.blueLeftMultiplication ? b * cs.blueLeftShift : b;
+
+        r = cs.redRightMultiplication ? r * cs.redRightShift : r;
+        g = cs.greenRightMultiplication ? g * cs.greenRightShift : g;
+        b = cs.blueRightMultiplication ? b * cs.blueRightShift : b;
 
         if (invertFractalColors) {
             r = 255 - r;

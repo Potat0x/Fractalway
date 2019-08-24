@@ -1,22 +1,25 @@
 package pl.potat0x.fractalway.fractal;
 
 public class ArgbColorScheme {
-    public int rLeftShift, rRightShift;
-    public int gLeftShift, gRightShift;
-    public int bLeftShift, bRightShift;
+    public int redLeftShift, redRightShift;
+    public int greenLeftShift, greenRightShift;
+    public int blueLeftShift, blueRightShift;
+    public boolean redLeftMultiplication, redRightMultiplication;
+    public boolean greenLeftMultiplication, greenRightMultiplication;
+    public boolean blueLeftMultiplication, blueRightMultiplication;
 
     public ArgbColorScheme() {
         setToDefault();
     }
 
     void setToDefault() {
-        rLeftShift = 8;
-        rRightShift = 24;
+        redLeftShift = 8;
+        redRightShift = 24;
 
-        gLeftShift = 16;
-        gRightShift = 24;
+        greenLeftShift = 16;
+        greenRightShift = 24;
 
-        bLeftShift = 24;
-        bRightShift = 24;
+        blueLeftShift = 24;
+        blueRightShift = 24;
     }
 }
