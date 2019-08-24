@@ -23,7 +23,7 @@
       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#updateFractalZoom" width="300.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Canvas fx:id="canvas" focusTraversable="true" height="275.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#updateFractalPosition" onScroll="#handleCanvasScrollEvent" width="300.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <Label fx:id="deviceInfoLabel" alignment="TOP_RIGHT" blendMode="DIFFERENCE" focusTraversable="false" mouseTransparent="true" text="device info" textAlignment="RIGHT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets right="4.0" top="2.0" />

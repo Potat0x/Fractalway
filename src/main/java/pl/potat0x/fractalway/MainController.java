@@ -150,18 +150,39 @@ public class MainController {
     }
 
     @FXML
-    private void updateFractalZoom(ScrollEvent scrollEvent) {
+    private void handleCanvasScrollEvent(ScrollEvent scrollEvent) {
+        if (scrollEvent.isShiftDown()) {
+            int repetitions = scrollEvent.isControlDown() ? Config.getInt("iterations-fast-change-step") : 1;
+            changeFractalIterations(scrollEvent.getDeltaX() > 0, repetitions);
+            return;
+        }
+
         if (scrollEvent.isControlDown()) {
             moveMouseToCanvasCenter();
             moveClickedFractalPointToCanvasCenter(scrollEvent.getX(), scrollEvent.getY());
         }
 
-        if (scrollEvent.getDeltaY() > 0) {
+        changeFractalZoom(scrollEvent.getDeltaY() > 0);
+        drawFractal();
+    }
+
+    private void changeFractalIterations(boolean increase, int repetitions) {
+        for (int i = 0; i < repetitions; i++) {
+            if (increase) {
+                fractal.increaseIterations();
+            } else {
+                fractal.decreaseIterations();
+            }
+        }
+        updateIterationsSlider();
+    }
+
+    private void changeFractalZoom(boolean increase) {
+        if (increase) {
             fractal.zoomIn();
         } else {
             fractal.zoomOut();
         }
-        drawFractal();
     }
 
     @FXML
@@ -173,14 +194,8 @@ public class MainController {
                 Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
                 Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
                 Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut())),
-                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> {
-                    fractal.increaseIterations();
-                    updateIterationsSlider();
-                })),
-                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> {
-                    fractal.decreaseIterations();
-                    updateIterationsSlider();
-                })),
+                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> fractal.increaseIterations())),
+                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations())),
                 Case($(is(KeyCode.S)), o -> run(() -> {
                     if (keyEvent.isControlDown()) {
                         saveAsImage();
