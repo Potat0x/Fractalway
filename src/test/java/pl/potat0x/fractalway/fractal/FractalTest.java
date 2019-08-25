@@ -8,6 +8,7 @@ public class FractalTest {
     @Test
     public void copyingTest() {
         Fractal fr = new Fractal(FractalType.MANDELBROT_SET, 0);
+        fr.invertColors = true;
         fr.iterations = 1;
         fr.posX = 2;
         fr.posY = 3;

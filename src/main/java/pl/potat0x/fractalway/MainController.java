@@ -73,7 +73,6 @@ public class MainController {
     private PatternPainter patternPainter;
     private Fractal fractal;
     private FractalPainter painter;
-    private boolean invertFractalColors;
     private DecimalFormat decimalFormat;
     private final CpuInfo cpuInfo;
 
@@ -120,7 +119,6 @@ public class MainController {
         initDecimalFormatter();
         fractal = new Fractal(FractalType.MANDELBROT_SET, Config.getInt("iterations-upper-limit"));
         patternPainter = new PatternPainter(canvasWidth, argb);
-        invertFractalColors = false;
         cpuInfo = new CpuInfo();
         colorScheme = new ArgbColorScheme();
         sliderValueConverter = new ParabolicScaleConverter(Config.getInt("iterations-upper-limit"), Config.getDouble("main-iterations-slider-scale-exp"));
@@ -130,8 +128,8 @@ public class MainController {
     private void initialize() {
         setBackgroundImage();
         initCanvas();
-        initDeviceMenu();
         drawPattern();
+        initDeviceMenu();
         initFractalMenu();
         initCursorMenu();
         initDeviceInfoMenuItem();
@@ -338,6 +336,7 @@ public class MainController {
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
             fractal = new Fractal(newType, Config.getInt("iterations-upper-limit"));
+            fractal.invertColors = invertColorsMenuItem.isSelected();
             releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
@@ -411,8 +410,8 @@ public class MainController {
 
     private void initInvertColorsMenuItem() {
         invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            invertFractalColors = newValue;
-            drawFractal(true);
+            fractal.invertColors = newValue;
+            drawFractal();
         });
     }
 
@@ -512,8 +511,6 @@ public class MainController {
             System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms (" + canvasWidth + "x" + canvasHeight + " px)");
             refreshTimeInfoLabel(timeInfo);
             saveCurrentFractalAndColorSchemeAsPrevious();
-        } else {
-            System.out.println("SKIPPED: drawFractal");
         }
     }
 
@@ -593,7 +590,7 @@ public class MainController {
         g = cs.greenRightMultiplication ? g * cs.greenRightShift : g;
         b = cs.blueRightMultiplication ? b * cs.blueRightShift : b;
 
-        if (invertFractalColors) {
+        if (fractal.invertColors) {
             r = 255 - r;
             g = 255 - g;
             b = 255 - b;
