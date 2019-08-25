@@ -154,11 +154,12 @@ public class CpuPainter implements FractalPainter {
     }
 
     private void createArgbColor(int[] argb, Fractal fractal, int x, int y, int i) {
-        double color = (255.0 * i) / (1.0 * fractal.iterations);
-        int r = (int) (17.0 * (abs(255 - color) / 255.0));
-        int g = (int) (255.0 * (color / 255.0));
-        int b = (int) (33.0 * (abs(255 - color) / 255.0));
+        int color = (int) ((255.0 * i) / (1.0 * fractal.iterations));
+//        int r = (int) (17.0 * (abs(255 - color) / 255.0));
+//        int g = (int) (255.0 * (color / 255.0));
+//        int b = (int) (33.0 * (abs(255 - color) / 255.0));
         int idx = y * width + x;
-        argb[idx] = (255 << 24) | (r << 16) | (g << 8) | b;
+//        argb[idx] = (255 << 24) | (r << 16) | (g << 8) | b;
+        argb[idx] = (255 << 24) | (color << 16) | (color << 8) | color;
     }
 }

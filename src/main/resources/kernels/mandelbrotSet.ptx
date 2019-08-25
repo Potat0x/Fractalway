@@ -23,8 +23,8 @@
 )
 {
 	.reg .pred 	%p<6>;
-	.reg .b32 	%r<26>;
-	.reg .f64 	%fd<40>;
+	.reg .b32 	%r<24>;
+	.reg .f64 	%fd<32>;
 	.reg .b64 	%rd<5>;
 
 
@@ -61,26 +61,26 @@
 	sub.f64 	%fd19, %fd18, %fd17;
 	fma.rn.f64 	%fd2, %fd19, %fd7, %fd9;
 	add.s32 	%r4, %r7, -1;
-	mov.u32 	%r25, 0;
-	mov.f64 	%fd38, 0d0000000000000000;
-	mov.f64 	%fd39, %fd38;
+	mov.u32 	%r23, 0;
+	mov.f64 	%fd30, 0d0000000000000000;
+	mov.f64 	%fd31, %fd30;
 
 BB0_2:
-	add.s32 	%r6, %r25, 1;
-	setp.ge.s32	%p4, %r25, %r4;
+	add.s32 	%r6, %r23, 1;
+	setp.ge.s32	%p4, %r23, %r4;
 	@%p4 bra 	BB0_4;
 
-	mul.f64 	%fd20, %fd38, %fd38;
-	mul.f64 	%fd21, %fd39, %fd39;
+	mul.f64 	%fd20, %fd30, %fd30;
+	mul.f64 	%fd21, %fd31, %fd31;
 	sub.f64 	%fd22, %fd20, %fd21;
 	add.f64 	%fd5, %fd1, %fd22;
-	add.f64 	%fd23, %fd38, %fd38;
-	fma.rn.f64 	%fd39, %fd23, %fd39, %fd2;
+	add.f64 	%fd23, %fd30, %fd30;
+	fma.rn.f64 	%fd31, %fd23, %fd31, %fd2;
 	mul.f64 	%fd24, %fd5, %fd5;
-	fma.rn.f64 	%fd25, %fd39, %fd39, %fd24;
+	fma.rn.f64 	%fd25, %fd31, %fd31, %fd24;
 	setp.leu.f64	%p5, %fd25, 0d4010000000000000;
-	mov.f64 	%fd38, %fd5;
-	mov.u32 	%r25, %r6;
+	mov.f64 	%fd30, %fd5;
+	mov.u32 	%r23, %r6;
 	@%p5 bra 	BB0_2;
 
 BB0_4:
@@ -88,25 +88,15 @@ BB0_4:
 	mul.f64 	%fd27, %fd26, 0d406FE00000000000;
 	cvt.rn.f64.s32	%fd28, %r7;
 	div.rn.f64 	%fd29, %fd27, %fd28;
-	mov.f64 	%fd30, 0d406FE00000000000;
-	sub.f64 	%fd31, %fd30, %fd29;
-	abs.f64 	%fd32, %fd31;
-	div.rn.f64 	%fd33, %fd32, 0d406FE00000000000;
-	mul.f64 	%fd34, %fd33, 0d4031000000000000;
-	cvt.rzi.s32.f64	%r17, %fd34;
-	div.rn.f64 	%fd35, %fd29, 0d406FE00000000000;
-	mul.f64 	%fd36, %fd35, 0d406FE00000000000;
-	cvt.rzi.s32.f64	%r18, %fd36;
-	mul.f64 	%fd37, %fd33, 0d4040800000000000;
-	cvt.rzi.s32.f64	%r19, %fd37;
-	shl.b32 	%r20, %r17, 16;
-	shl.b32 	%r21, %r18, 8;
-	or.b32  	%r22, %r20, %r21;
-	or.b32  	%r23, %r22, %r19;
-	or.b32  	%r24, %r23, -16777216;
+	cvt.rzi.s32.f64	%r17, %fd29;
+	shl.b32 	%r18, %r17, 16;
+	shl.b32 	%r19, %r17, 8;
+	or.b32  	%r20, %r17, %r19;
+	or.b32  	%r21, %r20, %r18;
+	or.b32  	%r22, %r21, -16777216;
 	mul.wide.s32 	%rd3, %r3, 4;
 	add.s64 	%rd4, %rd1, %rd3;
-	st.global.u32 	[%rd4], %r24;
+	st.global.u32 	[%rd4], %r22;
 
 BB0_5:
 	ret;

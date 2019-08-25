@@ -371,8 +371,7 @@ public class MainController {
     }
 
     private void selectLastItemInToggleGroup(ToggleGroup group) {
-//        group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
-        group.getToggles().get(0).setSelected(true);
+        group.getToggles().get(group.getToggles().size() - 1).setSelected(true);
     }
 
     private void initDeviceInfoLabel(FractalPainterDevice deviceType) {

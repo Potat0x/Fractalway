@@ -33,9 +33,6 @@ __global__ void mandelbrotSet(double zoom, double posX, double posY, int maxIter
         zPrevIm = zNextIm;
     }
 
-    double color = (255.0*i)/(1.0*maxIter);
-    int r = 17.0*(abs(255-color)/255.0);
-    int g = 255.0*(color/255.0);
-    int b = 33.0*(abs(255-color)/255.0);
-    argb[idx] = (255<<24) | (r<<16) | (g<<8) | b;
+    int color = (255.0*i)/maxIter;
+    argb[idx] = (255<<24) | (color<<16) | (color<<8) | color;
 }
