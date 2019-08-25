@@ -67,6 +67,9 @@ public class MainController {
     private int newCanvasWidth;
     private int newCanvasHeight;
 
+    private Fractal prevFractal;
+    private ArgbColorScheme prevColorScheme;
+
     private PatternPainter patternPainter;
     private Fractal fractal;
     private FractalPainter painter;
@@ -115,7 +118,7 @@ public class MainController {
         canvasHeight = Config.getInt("canvas-height");
         initImageArray();
         initDecimalFormatter();
-        fractal = new Fractal(FractalType.MANDELBROT_SET);
+        fractal = new Fractal(FractalType.MANDELBROT_SET, Config.getInt("iterations-upper-limit"));
         patternPainter = new PatternPainter(canvasWidth, argb);
         invertFractalColors = false;
         cpuInfo = new CpuInfo();
@@ -166,13 +169,11 @@ public class MainController {
         drawFractal();
     }
 
-    private void changeFractalIterations(boolean increase, int repetitions) {
-        for (int i = 0; i < repetitions; i++) {
-            if (increase) {
-                fractal.increaseIterations();
-            } else {
-                fractal.decreaseIterations();
-            }
+    private void changeFractalIterations(boolean increase, int changeBy) {
+        if (increase) {
+            fractal.increaseIterations(changeBy);
+        } else {
+            fractal.decreaseIterations(changeBy);
         }
         updateIterationsSlider();
     }
@@ -194,8 +195,8 @@ public class MainController {
                 Case($(is(KeyCode.RIGHT)), o -> run(() -> fractal.moveRight())),
                 Case($(is(KeyCode.D)), o -> run(() -> fractal.zoomIn())),
                 Case($(is(KeyCode.A)), o -> run(() -> fractal.zoomOut())),
-                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> fractal.increaseIterations())),
-                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> fractal.decreaseIterations())),
+                Case($(is(KeyCode.C).or(is(KeyCode.ADD))), o -> run(() -> changeFractalIterations(true, 1))),
+                Case($(is(KeyCode.Z).or(is(KeyCode.SUBTRACT))), o -> run(() -> changeFractalIterations(false, 1))),
                 Case($(is(KeyCode.S)), o -> run(() -> {
                     if (keyEvent.isControlDown()) {
                         saveAsImage();
@@ -336,7 +337,7 @@ public class MainController {
 
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
-            fractal = new Fractal(newType);
+            fractal = new Fractal(newType, Config.getInt("iterations-upper-limit"));
             releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
@@ -363,7 +364,7 @@ public class MainController {
             initDeviceInfoLabel(getCurrentDeviceType());
             releaseFractalPainter();
             painter = createFractalPainter();
-            drawFractal();
+            drawFractal(true);
         });
 
         selectLastItemInToggleGroup(deviceGroup);
@@ -412,7 +413,7 @@ public class MainController {
     private void initInvertColorsMenuItem() {
         invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
             invertFractalColors = newValue;
-            drawFractal();
+            drawFractal(true);
         });
     }
 
@@ -438,7 +439,7 @@ public class MainController {
             patternPainter = new PatternPainter(canvasWidth, argb);
             releaseFractalPainter();
             painter = createFractalPainter();
-            drawFractal();
+            drawFractal(true);
             windowResized = false;
         }
     }
@@ -504,12 +505,30 @@ public class MainController {
         }
     }
 
+    private void drawFractal(boolean force) {
+        if (force || isFractalAndColorSchemeDifferentThanPrevious()) {
+            Tuple2<Float, Float> timeInfo = paintFractal();
+            Clock clock = new Clock();
+            paintImageOnCanvas();
+            System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms (" + canvasWidth + "x" + canvasHeight + " px)");
+            refreshTimeInfoLabel(timeInfo);
+            saveCurrentFractalAndColorSchemeAsPrevious();
+        } else {
+            System.out.println("SKIPPED: drawFractal");
+        }
+    }
+
     private void drawFractal() {
-        Tuple2<Float, Float> timeInfo = paintFractal();
-        Clock clock = new Clock();
-        paintImageOnCanvas();
-        System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms (" + canvasWidth + "x" + canvasHeight + " px)");
-        refreshTimeInfoLabel(timeInfo);
+        drawFractal(false);
+    }
+
+    private boolean isFractalAndColorSchemeDifferentThanPrevious() {
+        return !(fractal.equals(prevFractal) && colorScheme.equals(prevColorScheme));
+    }
+
+    private void saveCurrentFractalAndColorSchemeAsPrevious() {
+        prevFractal = fractal.copy();
+        prevColorScheme = colorScheme.copy();
     }
 
     private FractalPainterDevice getCurrentDeviceType() {

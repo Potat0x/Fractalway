@@ -1,5 +1,6 @@
 package pl.potat0x.fractalway.fractal;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class ArgbColorScheme {
@@ -53,5 +54,46 @@ public class ArgbColorScheme {
 
     private boolean randomBoolean() {
         return new Random().nextBoolean();
+    }
+
+    public ArgbColorScheme copy() {
+        ArgbColorScheme newCs = new ArgbColorScheme();
+        newCs.redLeftShift = redLeftShift;
+        newCs.redRightShift = redRightShift;
+        newCs.greenLeftShift = greenLeftShift;
+        newCs.greenRightShift = greenRightShift;
+        newCs.blueLeftShift = blueLeftShift;
+        newCs.blueRightShift = blueRightShift;
+        newCs.redLeftMultiplication = redLeftMultiplication;
+        newCs.redRightMultiplication = redRightMultiplication;
+        newCs.greenLeftMultiplication = greenLeftMultiplication;
+        newCs.greenRightMultiplication = greenRightMultiplication;
+        newCs.blueLeftMultiplication = blueLeftMultiplication;
+        newCs.blueRightMultiplication = blueRightMultiplication;
+        return newCs;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArgbColorScheme that = (ArgbColorScheme) o;
+        return redLeftShift == that.redLeftShift &&
+                redRightShift == that.redRightShift &&
+                greenLeftShift == that.greenLeftShift &&
+                greenRightShift == that.greenRightShift &&
+                blueLeftShift == that.blueLeftShift &&
+                blueRightShift == that.blueRightShift &&
+                redLeftMultiplication == that.redLeftMultiplication &&
+                redRightMultiplication == that.redRightMultiplication &&
+                greenLeftMultiplication == that.greenLeftMultiplication &&
+                greenRightMultiplication == that.greenRightMultiplication &&
+                blueLeftMultiplication == that.blueLeftMultiplication &&
+                blueRightMultiplication == that.blueRightMultiplication;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(redLeftShift, redRightShift, greenLeftShift, greenRightShift, blueLeftShift, blueRightShift, redLeftMultiplication, redRightMultiplication, greenLeftMultiplication, greenRightMultiplication, blueLeftMultiplication, blueRightMultiplication);
     }
 }
