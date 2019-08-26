@@ -3,6 +3,7 @@ package pl.potat0x.fractalway.settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import pl.potat0x.fractalway.fractal.Fractal;
+import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.validation.DoubleValidator;
 
@@ -30,6 +31,13 @@ public class NavigationSettingsController extends BaseController {
         super.initialize(zoomField);
         setCorrectnessWatchers();
         fillForm();
+    }
+
+    @FXML
+    private void resetZoom() {
+        fractal.resetZoom();
+        fillForm();
+        onFormSubmitted.execute();
     }
 
     @Override

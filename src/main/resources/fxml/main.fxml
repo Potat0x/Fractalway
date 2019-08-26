@@ -39,7 +39,6 @@
                   <CheckMenuItem fx:id="iterationsSliderMenuItem" mnemonicParsing="false" text="Iterations slider" />
                   <CheckMenuItem fx:id="deviceInfoMenuItem" mnemonicParsing="false" text="Device info" />
                   <CheckMenuItem fx:id="timeInfoMenuItem" mnemonicParsing="false" text="Time info" />
-                  <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
                </items>
             </Menu>
             <Menu fx:id="settingsMenu" mnemonicParsing="false" text="Settings">
@@ -47,6 +46,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#showColorSchemeSettingsWindow" text="Color scheme" />
                   <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Fractal" />
                   <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
+                  <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Save">

@@ -15,7 +15,12 @@
             <Insets top="3.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="zoomField" onKeyPressed="#handleKeyEvent" />
+      <HBox>
+         <children>
+            <TextField fx:id="zoomField" onKeyPressed="#handleKeyEvent" HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#resetZoom" text="Reset" />
+         </children>
+      </HBox>
       <Label text="Position X">
          <VBox.margin>
             <Insets top="3.0" />

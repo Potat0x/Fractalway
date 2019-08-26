@@ -3,6 +3,7 @@ package pl.potat0x.fractalway.fractal;
 import java.util.Objects;
 
 public class Fractal {
+    private static final double DEFAULT_ZOOM = 0.0055;
     private final int upperIterLimit;
 
     public final FractalType type;
@@ -13,7 +14,7 @@ public class Fractal {
     public double posY = 0;
     public double positionStep = 32;
 
-    public double zoom = 0.0055;
+    public double zoom = DEFAULT_ZOOM;
     public double zoomMultiplier = 1.2;
 
     public double complexParamRe = -0.8;
@@ -62,6 +63,10 @@ public class Fractal {
 
     public void moveRight() {
         posX += positionStep * zoom;
+    }
+
+    public void resetZoom() {
+        zoom = DEFAULT_ZOOM;
     }
 
     public String getViewAsString() {
