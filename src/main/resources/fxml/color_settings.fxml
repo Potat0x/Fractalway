@@ -27,7 +27,8 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" text="Reset">
+                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" prefWidth="52.0" text="Delete" />
+                  <Button mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" prefWidth="52.0" text="Reset">
                      <tooltip>
                         <Tooltip text="Reset current color scheme to default" />
                      </tooltip>
@@ -78,6 +79,11 @@
                         <Tooltip text="Random column" />
                      </tooltip>
                   </CheckBox>
+                  <Button layoutX="250.0" layoutY="13.0" mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" prefWidth="52.0" text="Reset">
+                     <tooltip>
+                        <Tooltip text="Reset current color scheme to default" />
+                     </tooltip>
+                  </Button>
                </children>
                <padding>
                   <Insets top="2.0" />

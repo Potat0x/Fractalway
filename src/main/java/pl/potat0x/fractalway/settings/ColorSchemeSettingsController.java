@@ -25,6 +25,8 @@ public class ColorSchemeSettingsController extends BaseController {
     private Slider blueLeft, blueRight;
 
     @FXML
+    Button deleteHistoryItemButton;
+    @FXML
     private Pagination colorSchemeHistoryPagin;
     @FXML
     private CheckBox randomLeftMultiplication, randomRightMultiplication;
@@ -52,9 +54,11 @@ public class ColorSchemeSettingsController extends BaseController {
     private void initialize() {
         fillForm();
         initValueListeners();
+        updateHistoryDeleteButton();
         colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
             restoreColorSchemeFromHistory(newValue.intValue());
             fillForm();
+            updateHistoryDeleteButton();
             onFormSubmitted.execute();
         });
     }
@@ -97,6 +101,41 @@ public class ColorSchemeSettingsController extends BaseController {
         onFormSubmitted.execute();
     }
 
+    @FXML
+    private void deleteCurrentColorScheme() {
+        if (colorSchemeHistory.size() > 1) {
+            int deletedItemID = deleteCurrentHistoryItem();
+            int newIndex = getIndexIfValidElseGetLastIndex(colorSchemeHistory, deletedItemID);
+            restoreColorSchemeFromHistory(newIndex);
+
+            listenersUnlocked = false;
+            fillForm();
+            listenersUnlocked = true;
+
+            onFormSubmitted.execute();
+            updateHistoryPaginPageCount();
+            selectPaginItem(newIndex);
+        }
+    }
+
+    private void updateHistoryDeleteButton() {
+        deleteHistoryItemButton.setDisable(colorSchemeHistory.size() <= 1);
+    }
+
+    private int deleteCurrentHistoryItem() {
+        int deleteAt = colorSchemeHistoryPagin.getCurrentPageIndex();
+        colorSchemeHistory.remove(deleteAt);
+        return deleteAt;
+    }
+
+    private int getIndexIfValidElseGetLastIndex(List list, int index) {
+        if (index < list.size()) {
+            return index;
+        } else {
+            return list.size() - 1;
+        }
+    }
+
     private void updateHistoryPaginPageCount() {
         colorSchemeHistoryPagin.setPageCount(colorSchemeHistory.size());
     }
@@ -116,10 +155,16 @@ public class ColorSchemeSettingsController extends BaseController {
         colorScheme.assignValues(selectedScheme);
     }
 
+    private void selectPaginItem(int itemId) {
+        colorSchemeHistoryPagin.setCurrentPageIndex(itemId);
+    }
+
     private void selectLastPaginItem() {
         int pageCount = colorSchemeHistoryPagin.getPageCount();
         if (pageCount > 0) {
-            colorSchemeHistoryPagin.setCurrentPageIndex(pageCount - 1);
+            selectPaginItem(pageCount - 1);
+        } else if (pageCount == 0) {
+            selectPaginItem(0);
         }
     }
 
