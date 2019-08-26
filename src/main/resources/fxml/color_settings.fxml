@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tooltip?>
@@ -26,7 +27,22 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#setRandomColorSchemeValues" text="Random">
+                  <Button mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" text="Reset">
+                     <tooltip>
+                        <Tooltip text="Reset current color scheme to default" />
+                     </tooltip>
+                  </Button>
+                  <Pagination fx:id="colorSchemeHistoryPagin" maxPageIndicatorCount="3" pageCount="1" prefHeight="26.0" prefWidth="110.0" style="-fx-page-information-alignment: right; -fx-font-size: 12; -fx-page-information-visible: false;">
+                     <padding>
+                        <Insets bottom="1.0" />
+                     </padding>
+                     <tooltip>
+                        <Tooltip text="History" />
+                     </tooltip></Pagination>
+                  <Button mnemonicParsing="false" onAction="#createRandomColorScheme" text="Random">
+                     <tooltip>
+                        <Tooltip text="Create new, random color scheme" />
+                     </tooltip>
                      <HBox.margin>
                         <Insets right="2.0" />
                      </HBox.margin>
@@ -43,7 +59,7 @@
                   </Label>
                   <CheckBox fx:id="randomLeftMultiplication" mnemonicParsing="false">
                      <tooltip>
-                        <Tooltip text="Random this column" />
+                        <Tooltip text="Random column" />
                      </tooltip>
                      <HBox.margin>
                         <Insets />
@@ -59,7 +75,7 @@
                         <Insets />
                      </HBox.margin>
                      <tooltip>
-                        <Tooltip text="Random this column" />
+                        <Tooltip text="Random column" />
                      </tooltip>
                   </CheckBox>
                </children>

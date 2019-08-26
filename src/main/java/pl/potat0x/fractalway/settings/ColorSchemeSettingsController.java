@@ -5,11 +5,14 @@ import javafx.scene.control.*;
 import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 import pl.potat0x.fractalway.utils.Action;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ColorSchemeSettingsController extends BaseController {
 
     private final ArgbColorScheme colorScheme;
+    private final List<ArgbColorScheme> colorSchemeHistory;
 
     @FXML
     private CheckBox randomBitshift;
@@ -21,6 +24,8 @@ public class ColorSchemeSettingsController extends BaseController {
     @FXML
     private Slider blueLeft, blueRight;
 
+    @FXML
+    private Pagination colorSchemeHistoryPagin;
     @FXML
     private CheckBox randomLeftMultiplication, randomRightMultiplication;
 
@@ -39,12 +44,19 @@ public class ColorSchemeSettingsController extends BaseController {
     public ColorSchemeSettingsController(ArgbColorScheme colorScheme, Action onFormSubmitted) {
         super(onFormSubmitted);
         this.colorScheme = colorScheme;
+        colorSchemeHistory = new LinkedList<>();
+        colorSchemeHistory.add(colorScheme.copy());
     }
 
     @FXML
     private void initialize() {
         fillForm();
         initValueListeners();
+        colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
+            restoreColorSchemeFromHistory(newValue.intValue());
+            fillForm();
+            onFormSubmitted.execute();
+        });
     }
 
     @Override
@@ -65,12 +77,50 @@ public class ColorSchemeSettingsController extends BaseController {
     }
 
     @FXML
-    private void setRandomColorSchemeValues() {
+    private void createRandomColorScheme() {
+        updateCurrentItemInHistory();
+        addNewRandomColorSchemeToHistory();
         listenersUnlocked = false;
-        colorScheme.random(randomBitshift.isSelected(), randomLeftMultiplication.isSelected(), randomRightMultiplication.isSelected());
-        fillForm();
-        onFormSubmitted.execute();
+        updateHistoryPaginPageCount();
+        selectLastPaginItem();
         listenersUnlocked = true;
+        onFormSubmitted.execute();
+    }
+
+    @FXML
+    private void resetCurrentColorSchemeToDefault() {
+        colorScheme.assignValues(new ArgbColorScheme());
+        updateCurrentItemInHistory();
+        listenersUnlocked = false;
+        fillForm();
+        listenersUnlocked = true;
+        onFormSubmitted.execute();
+    }
+
+    private void updateHistoryPaginPageCount() {
+        colorSchemeHistoryPagin.setPageCount(colorSchemeHistory.size());
+    }
+
+    private void addNewRandomColorSchemeToHistory() {
+        ArgbColorScheme newColorScheme = new ArgbColorScheme();
+        newColorScheme.random(randomBitshift.isSelected(), randomLeftMultiplication.isSelected(), randomRightMultiplication.isSelected());
+        colorSchemeHistory.add(newColorScheme);
+    }
+
+    private void updateCurrentItemInHistory() {
+        colorSchemeHistory.get(colorSchemeHistoryPagin.getCurrentPageIndex()).assignValues(colorScheme);
+    }
+
+    private void restoreColorSchemeFromHistory(int historyItemId) {
+        ArgbColorScheme selectedScheme = colorSchemeHistory.get(historyItemId);
+        colorScheme.assignValues(selectedScheme);
+    }
+
+    private void selectLastPaginItem() {
+        int pageCount = colorSchemeHistoryPagin.getPageCount();
+        if (pageCount > 0) {
+            colorSchemeHistoryPagin.setCurrentPageIndex(pageCount - 1);
+        }
     }
 
     @Override

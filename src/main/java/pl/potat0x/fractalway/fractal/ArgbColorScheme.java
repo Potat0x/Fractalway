@@ -58,19 +58,23 @@ public class ArgbColorScheme {
 
     public ArgbColorScheme copy() {
         ArgbColorScheme newCs = new ArgbColorScheme();
-        newCs.redLeftShift = redLeftShift;
-        newCs.redRightShift = redRightShift;
-        newCs.greenLeftShift = greenLeftShift;
-        newCs.greenRightShift = greenRightShift;
-        newCs.blueLeftShift = blueLeftShift;
-        newCs.blueRightShift = blueRightShift;
-        newCs.redLeftMultiplication = redLeftMultiplication;
-        newCs.redRightMultiplication = redRightMultiplication;
-        newCs.greenLeftMultiplication = greenLeftMultiplication;
-        newCs.greenRightMultiplication = greenRightMultiplication;
-        newCs.blueLeftMultiplication = blueLeftMultiplication;
-        newCs.blueRightMultiplication = blueRightMultiplication;
+        newCs.assignValues(this);
         return newCs;
+    }
+
+    public void assignValues(ArgbColorScheme src) {
+        redLeftShift = src.redLeftShift;
+        redRightShift = src.redRightShift;
+        greenLeftShift = src.greenLeftShift;
+        greenRightShift = src.greenRightShift;
+        blueLeftShift = src.blueLeftShift;
+        blueRightShift = src.blueRightShift;
+        redLeftMultiplication = src.redLeftMultiplication;
+        redRightMultiplication = src.redRightMultiplication;
+        greenLeftMultiplication = src.greenLeftMultiplication;
+        greenRightMultiplication = src.greenRightMultiplication;
+        blueLeftMultiplication = src.blueLeftMultiplication;
+        blueRightMultiplication = src.blueRightMultiplication;
     }
 
     @Override
