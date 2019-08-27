@@ -511,6 +511,8 @@ public class MainController {
             System.out.println("paintImageOnCanvas: " + clock.getElapsedTime() + " ms (" + canvasWidth + "x" + canvasHeight + " px)");
             refreshTimeInfoLabel(timeInfo);
             saveCurrentFractalAndColorSchemeAsPrevious();
+            System.out.println("FRACTAL PAINTED:");
+            System.out.println(colorScheme);
         }
     }
 

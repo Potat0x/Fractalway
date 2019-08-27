@@ -170,7 +170,7 @@ public class ColorSchemeSettingsController extends BaseController {
     private void initPredefinedColorSchemeMenuButton() {
         for (PredefinedColorSchemes value : PredefinedColorSchemes.values()) {
             MenuItem menuItem = new MenuItem();
-            menuItem.setText(StringCapitalizer.capitalizeFirstLetter(value.name().toLowerCase()));
+            menuItem.setText(StringCapitalizer.capitalizeFirstLetter(value.name().replaceAll("_", "-")));
             menuItem.setOnAction(event -> {
                 changeCurrentColorScene(value.get());
                 updateCurrentItemInHistory();

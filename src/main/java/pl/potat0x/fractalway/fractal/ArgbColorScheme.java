@@ -100,4 +100,22 @@ public class ArgbColorScheme {
     public int hashCode() {
         return Objects.hash(redLeftShift, redRightShift, greenLeftShift, greenRightShift, blueLeftShift, blueRightShift, redLeftMultiplication, redRightMultiplication, greenLeftMultiplication, greenRightMultiplication, blueLeftMultiplication, blueRightMultiplication);
     }
+
+    @Override
+    public String toString() {
+        return "ArgbColorScheme{" +
+                "redLeftShift=" + redLeftShift +
+                ", redRightShift=" + redRightShift +
+                ", greenLeftShift=" + greenLeftShift +
+                ", greenRightShift=" + greenRightShift +
+                ", blueLeftShift=" + blueLeftShift +
+                ", blueRightShift=" + blueRightShift +
+                ", redLeftMultiplication=" + redLeftMultiplication +
+                ", redRightMultiplication=" + redRightMultiplication +
+                ", greenLeftMultiplication=" + greenLeftMultiplication +
+                ", greenRightMultiplication=" + greenRightMultiplication +
+                ", blueLeftMultiplication=" + blueLeftMultiplication +
+                ", blueRightMultiplication=" + blueRightMultiplication +
+                '}';
+    }
 }
