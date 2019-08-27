@@ -1,3 +1,5 @@
+#include "createArgbColor.cu"
+
 extern "C"
 __global__ void burningShip(double zoom, double posX, double posY, int maxIter, int width, int height, int* argb)
 {
@@ -20,11 +22,10 @@ __global__ void burningShip(double zoom, double posX, double posY, int maxIter, 
     int i = 0;
     while(i++ < maxIter-1)
     {
-        // zNext = zPrev*zPrev + p
         zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + pRe;
         zNextIm = 2.0*zPrevRe*zPrevIm + pIm;
 
-        // |zPrev| > 4.0
+        // |zNext| > 4.0
         if((zNextRe * zNextRe + zNextIm * zNextIm) > 4.0){
             break;
         }
@@ -33,6 +34,5 @@ __global__ void burningShip(double zoom, double posX, double posY, int maxIter, 
         zPrevIm = fabs(zNextIm);
     }
 
-    int color = (255.0*i)/maxIter;
-    argb[idx] = (255<<24) | (color<<16) | (color<<8) | color;
+    argb[idx] = createArgbColor(i, maxIter);
 }

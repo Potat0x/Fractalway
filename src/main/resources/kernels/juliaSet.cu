@@ -1,3 +1,5 @@
+#include "createArgbColor.cu"
+
 extern "C"
 __global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int width, int height, int* argb, double cRe, double cIm)
 {
@@ -25,7 +27,7 @@ __global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int
         zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + cRe;
         zNextIm = 2.0*zPrevRe*zPrevIm + cIm;
 
-        // |zPrev| > 4.0
+        // |zNext| > 4.0
         if((zNextRe * zNextRe + zNextIm * zNextIm) > 4.0){
             break;
         }
@@ -34,6 +36,5 @@ __global__ void juliaSet(double zoom, double posX, double posY, int maxIter, int
         zPrevIm = zNextIm;
     }
 
-    int color = (255.0*i)/maxIter;
-    argb[idx] = (255<<24) | (color<<16) | (color<<8) | color;
+    argb[idx] = createArgbColor(i, maxIter);
 }

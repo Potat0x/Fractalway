@@ -3,10 +3,10 @@ package pl.potat0x.fractalway.fractalpainter;
 import io.vavr.Function4;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
+import pl.potat0x.fractalway.utils.Config;
 import pl.potat0x.fractalway.utils.math.IntervalDistributor;
 
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.is;
-import static java.lang.Math.abs;
 
 public class CpuPainter implements FractalPainter {
     private final int width;
@@ -74,8 +73,9 @@ public class CpuPainter implements FractalPainter {
         double zNextRe;
         double zNextIm;
 
-        double pRe = (x - width / 2.0) * fractal.zoom + fractal.posX;
-        double pIm = (y - height / 2.0) * fractal.zoom + fractal.posY;
+        Tuple2<Double, Double> p = calculatePositionParam(fractal, x, y);
+        double pRe = p._1;
+        double pIm = p._2;
 
         int i = 0;
         while (i++ < fractal.iterations - 1) {
@@ -83,7 +83,7 @@ public class CpuPainter implements FractalPainter {
             zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + pRe;
             zNextIm = 2.0 * zPrevRe * zPrevIm + pIm;
 
-            // |zPrev| > 4.0
+            // |zNext| > 4.0
             if ((zNextRe * zNextRe + zNextIm * zNextIm) > 4.0) {
                 break;
             }
@@ -100,8 +100,9 @@ public class CpuPainter implements FractalPainter {
         double zNextRe;
         double zNextIm;
 
-        double pRe = (x - width / 2.0) * fractal.zoom + fractal.posX;
-        double pIm = (y - height / 2.0) * fractal.zoom + fractal.posY;
+        Tuple2<Double, Double> p = calculatePositionParam(fractal, x, y);
+        double pRe = p._1;
+        double pIm = p._2;
 
         double zPrevRe = pRe;
         double zPrevIm = pIm;
@@ -112,7 +113,7 @@ public class CpuPainter implements FractalPainter {
             zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + fractal.complexParamRe;
             zNextIm = 2.0 * zPrevRe * zPrevIm + fractal.complexParamIm;
 
-            // |zPrev| > 4.0
+            // |zNext| > 4.0
             if ((zNextRe * zNextRe + zNextIm * zNextIm) > 4.0) {
                 break;
             }
@@ -131,8 +132,9 @@ public class CpuPainter implements FractalPainter {
         double zNextRe;
         double zNextIm;
 
-        double pRe = (x - width / 2.0) * fractal.zoom + fractal.posX;
-        double pIm = (y - height / 2.0) * fractal.zoom + fractal.posY;
+        Tuple2<Double, Double> p = calculatePositionParam(fractal, x, y);
+        double pRe = p._1;
+        double pIm = p._2;
 
         int i = 0;
         while (i++ < fractal.iterations - 1) {
@@ -140,7 +142,7 @@ public class CpuPainter implements FractalPainter {
             zNextRe = zPrevRe * zPrevRe - zPrevIm * zPrevIm + pRe;
             zNextIm = 2.0 * zPrevRe * zPrevIm + pIm;
 
-            // |zPrev| > 4.0
+            // |zNext| > 4.0
             if ((zNextRe * zNextRe + zNextIm * zNextIm) > 4.0) {
                 break;
             }
@@ -153,13 +155,15 @@ public class CpuPainter implements FractalPainter {
         return null;
     }
 
+    private Tuple2<Double, Double> calculatePositionParam(Fractal fractal, int x, int y) {
+        double pRe = (x - width / 2.0) * fractal.zoom + fractal.posX;
+        double pIm = (y - height / 2.0) * fractal.zoom + fractal.posY;
+        return Tuple.of(pRe, pIm);
+    }
+
     private void createArgbColor(int[] argb, Fractal fractal, int x, int y, int i) {
         int color = (int) ((255.0 * i) / (1.0 * fractal.iterations));
-//        int r = (int) (17.0 * (abs(255 - color) / 255.0));
-//        int g = (int) (255.0 * (color / 255.0));
-//        int b = (int) (33.0 * (abs(255 - color) / 255.0));
         int idx = y * width + x;
-//        argb[idx] = (255 << 24) | (r << 16) | (g << 8) | b;
         argb[idx] = (255 << 24) | (color << 16) | (color << 8) | color;
     }
 }
