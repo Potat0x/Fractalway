@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -27,12 +28,20 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" prefWidth="52.0" text="Delete" />
-                  <Button mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" prefWidth="52.0" text="Reset">
+                  <SplitMenuButton fx:id="colorSchemeMenuButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Color scheme" HBox.hgrow="ALWAYS">
                      <tooltip>
-                        <Tooltip text="Reset current color scheme to default" />
+                        <Tooltip text="Change current color scheme" />
                      </tooltip>
-                  </Button>
+                  </SplitMenuButton>
+                  <Separator orientation="VERTICAL">
+                     <HBox.margin>
+                        <Insets left="3.0" />
+                     </HBox.margin>
+                  </Separator>
+                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" prefWidth="52.0" text="Delete">
+                     <tooltip>
+                        <Tooltip text="Delete current color scheme from history" />
+                     </tooltip></Button>
                   <Pagination fx:id="colorSchemeHistoryPagin" maxPageIndicatorCount="3" pageCount="1" prefHeight="26.0" prefWidth="110.0" style="-fx-page-information-alignment: right; -fx-font-size: 12; -fx-page-information-visible: false;">
                      <padding>
                         <Insets bottom="1.0" />
@@ -79,11 +88,6 @@
                         <Tooltip text="Random column" />
                      </tooltip>
                   </CheckBox>
-                  <Button layoutX="250.0" layoutY="13.0" mnemonicParsing="false" onAction="#resetCurrentColorSchemeToDefault" prefWidth="52.0" text="Reset">
-                     <tooltip>
-                        <Tooltip text="Reset current color scheme to default" />
-                     </tooltip>
-                  </Button>
                </children>
                <padding>
                   <Insets top="2.0" />

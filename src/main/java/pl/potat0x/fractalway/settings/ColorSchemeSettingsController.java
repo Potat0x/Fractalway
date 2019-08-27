@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 import pl.potat0x.fractalway.utils.Action;
+import pl.potat0x.fractalway.utils.StringCapitalizer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,10 @@ public class ColorSchemeSettingsController extends BaseController {
     private Slider blueLeft, blueRight;
 
     @FXML
-    Button deleteHistoryItemButton;
+    private SplitMenuButton colorSchemeMenuButton;
+
+    @FXML
+    private Button deleteHistoryItemButton;
     @FXML
     private Pagination colorSchemeHistoryPagin;
     @FXML
@@ -55,6 +59,7 @@ public class ColorSchemeSettingsController extends BaseController {
         fillForm();
         initValueListeners();
         updateHistoryDeleteButton();
+        initPredefinedColorSchemeMenuButton();
         colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
             restoreColorSchemeFromHistory(newValue.intValue());
             fillForm();
@@ -65,6 +70,7 @@ public class ColorSchemeSettingsController extends BaseController {
 
     @Override
     protected void fillForm() {
+        listenersUnlocked = false;
         setSliderValue(redLeft, colorScheme.redLeftShift);
         setSliderValue(redRight, colorScheme.redRightShift);
         setSliderValue(greenLeft, colorScheme.greenLeftShift);
@@ -78,40 +84,33 @@ public class ColorSchemeSettingsController extends BaseController {
         setCheckBoxValue(greenRightMultiplication, colorScheme.greenRightMultiplication);
         setCheckBoxValue(blueLeftMultiplication, colorScheme.blueLeftMultiplication);
         setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
+        listenersUnlocked = true;
     }
 
     @FXML
     private void createRandomColorScheme() {
         updateCurrentItemInHistory();
         addNewRandomColorSchemeToHistory();
-        listenersUnlocked = false;
         updateHistoryPaginPageCount();
         selectLastPaginItem();
-        listenersUnlocked = true;
         onFormSubmitted.execute();
     }
 
     @FXML
-    private void resetCurrentColorSchemeToDefault() {
-        colorScheme.assignValues(new ArgbColorScheme());
+    private void changeCurrentColorScene(ArgbColorScheme newColorScheme) {
+        colorScheme.assignValues(newColorScheme);
         updateCurrentItemInHistory();
-        listenersUnlocked = false;
         fillForm();
-        listenersUnlocked = true;
         onFormSubmitted.execute();
     }
 
     @FXML
     private void deleteCurrentColorScheme() {
         if (colorSchemeHistory.size() > 1) {
-            int deletedItemID = deleteCurrentHistoryItem();
-            int newIndex = getIndexIfValidElseGetLastIndex(colorSchemeHistory, deletedItemID);
+            int deletedItemId = deleteCurrentHistoryItem();
+            int newIndex = getIndexIfValidElseGetLastIndex(colorSchemeHistory, deletedItemId);
             restoreColorSchemeFromHistory(newIndex);
-
-            listenersUnlocked = false;
             fillForm();
-            listenersUnlocked = true;
-
             onFormSubmitted.execute();
             updateHistoryPaginPageCount();
             selectPaginItem(newIndex);
@@ -165,6 +164,18 @@ public class ColorSchemeSettingsController extends BaseController {
             selectPaginItem(pageCount - 1);
         } else if (pageCount == 0) {
             selectPaginItem(0);
+        }
+    }
+
+    private void initPredefinedColorSchemeMenuButton() {
+        for (PredefinedColorSchemes value : PredefinedColorSchemes.values()) {
+            MenuItem menuItem = new MenuItem();
+            menuItem.setText(StringCapitalizer.capitalizeFirstLetter(value.name().toLowerCase()));
+            menuItem.setOnAction(event -> {
+                changeCurrentColorScene(value.get());
+                updateCurrentItemInHistory();
+            });
+            colorSchemeMenuButton.getItems().add(menuItem);
         }
     }
 
