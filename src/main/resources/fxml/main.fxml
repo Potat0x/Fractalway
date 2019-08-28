@@ -31,9 +31,9 @@
       </Label>
       <MenuBar maxWidth="-Infinity" GridPane.halignment="LEFT" GridPane.valignment="TOP">
          <menus>
-            <Menu fx:id="fractalMenu" mnemonicParsing="false" text="Fractal" />
-            <Menu fx:id="deviceMenu" mnemonicParsing="false" text="Device" />
-            <Menu mnemonicParsing="false" text="View">
+            <Menu fx:id="fractalMenu" text="_Fractal" />
+            <Menu fx:id="deviceMenu" mnemonicParsing="false" text="_Device" />
+            <Menu mnemonicParsing="false" text="_View">
                <items>
                   <Menu fx:id="canvasCursorMenu" mnemonicParsing="false" text="Mouse cursor" />
                   <CheckMenuItem fx:id="iterationsSliderMenuItem" mnemonicParsing="false" text="Iterations slider" />
@@ -41,11 +41,11 @@
                   <CheckMenuItem fx:id="timeInfoMenuItem" mnemonicParsing="false" text="Time info" />
                </items>
             </Menu>
-            <Menu fx:id="settingsMenu" mnemonicParsing="false" text="Settings">
+            <Menu fx:id="settingsMenu" mnemonicParsing="false" text="_Settings">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#showColorSchemeSettingsWindow" text="Color scheme" />
-                  <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Fractal" />
-                  <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
+                  <MenuItem onAction="#showColorSchemeSettingsWindow" text="Color _scheme" />
+                  <MenuItem onAction="#showFractalSettingsWindow" text="_Fractal" />
+                  <MenuItem onAction="#showNavigationSettingsWindow" text="N_avigation" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Save">
