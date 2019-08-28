@@ -4,16 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 import pl.potat0x.fractalway.utils.Action;
-import pl.potat0x.fractalway.utils.StringCapitalizer;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ColorSchemeSettingsController extends BaseController {
 
     private final ArgbColorScheme colorScheme;
-    private final List<ArgbColorScheme> colorSchemeHistory;
+    private final ColorSchemeHistory history;
 
     @FXML
     private CheckBox randomBitshift;
@@ -52,27 +49,44 @@ public class ColorSchemeSettingsController extends BaseController {
     public ColorSchemeSettingsController(ArgbColorScheme colorScheme, Action onFormSubmitted) {
         super(onFormSubmitted);
         this.colorScheme = colorScheme;
-        colorSchemeHistory = new LinkedList<>();
-        colorSchemeHistory.add(colorScheme.copy());
+        history = new ColorSchemeHistory(colorScheme);
+        history.addToHistory(colorScheme);
     }
 
     @FXML
     private void initialize() {
         fillForm();
         initValueListeners();
-        updateHistoryDeleteButton();
         initPredefinedColorSchemeMenuButton();
+
         colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
-            restoreColorSchemeFromHistory(newValue.intValue());
-            fillForm();
-            updateHistoryDeleteButton();
-            onFormSubmitted.execute();
+            history.updateHistory(history.getIndexIfValidElseGetLastIndex(oldValue.intValue()));
+            history.restoreFromHistory(newValue.intValue());
+            fillAndSubmitForm();
         });
 
         invertColorsButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             colorScheme.invertColors = newValue;
-            onFormSubmitted.execute();
+            fillAndSubmitForm();
         });
+    }
+
+    @FXML
+    private void createRandomColorScheme() {
+        ArgbColorScheme newColorScheme = new ArgbColorScheme();
+        newColorScheme.random(randomBitshift.isSelected(), randomLeftMultiplication.isSelected(), randomRightMultiplication.isSelected());
+        history.addToHistory(newColorScheme);
+        updatePagin(history.size() - 1);
+        fillAndSubmitForm();
+    }
+
+    @FXML
+    private void deleteCurrentColorScheme() {
+        int currentPageIndex = getPaginCurrentIndex();
+        history.delete(currentPageIndex);
+        history.restoreFromHistory(history.getIndexIfValidElseGetLastIndex(currentPageIndex));
+        updatePagin(history.size() - 1);
+        fillAndSubmitForm();
     }
 
     @Override
@@ -93,95 +107,31 @@ public class ColorSchemeSettingsController extends BaseController {
         setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
 
         invertColorsButton.setSelected(colorScheme.invertColors);
+        deleteHistoryItemButton.setDisable(history.size() < 2);
         listenersUnlocked = true;
     }
 
-    @FXML
-    private void createRandomColorScheme() {
-        updateCurrentItemInHistory();
-        addNewRandomColorSchemeToHistory();
-        updateHistoryPaginPageCount();
-        selectLastPaginItem();
-        onFormSubmitted.execute();
-    }
-
-    private void changeCurrentColorScheme(ArgbColorScheme newColorScheme) {
-        colorScheme.assignValues(newColorScheme);
-        updateCurrentItemInHistory();
+    private void fillAndSubmitForm() {
         fillForm();
         onFormSubmitted.execute();
     }
 
-    @FXML
-    private void deleteCurrentColorScheme() {
-        if (colorSchemeHistory.size() > 1) {
-            int deletedItemId = deleteCurrentHistoryItem();
-            int newIndex = getIndexIfValidElseGetLastIndex(colorSchemeHistory, deletedItemId);
-            restoreColorSchemeFromHistory(newIndex);
-            fillForm();
-            onFormSubmitted.execute();
-            updateHistoryPaginPageCount();
-            selectPaginItem(newIndex);
-        }
+    private int getPaginCurrentIndex() {
+        return colorSchemeHistoryPagin.getCurrentPageIndex();
     }
 
-    private void updateHistoryDeleteButton() {
-        deleteHistoryItemButton.setDisable(colorSchemeHistory.size() <= 1);
-    }
-
-    private int deleteCurrentHistoryItem() {
-        int deleteAt = colorSchemeHistoryPagin.getCurrentPageIndex();
-        colorSchemeHistory.remove(deleteAt);
-        return deleteAt;
-    }
-
-    private int getIndexIfValidElseGetLastIndex(List list, int index) {
-        if (index < list.size()) {
-            return index;
-        } else {
-            return list.size() - 1;
-        }
-    }
-
-    private void updateHistoryPaginPageCount() {
-        colorSchemeHistoryPagin.setPageCount(colorSchemeHistory.size());
-    }
-
-    private void addNewRandomColorSchemeToHistory() {
-        ArgbColorScheme newColorScheme = new ArgbColorScheme();
-        newColorScheme.random(randomBitshift.isSelected(), randomLeftMultiplication.isSelected(), randomRightMultiplication.isSelected());
-        colorSchemeHistory.add(newColorScheme);
-    }
-
-    private void updateCurrentItemInHistory() {
-        colorSchemeHistory.get(colorSchemeHistoryPagin.getCurrentPageIndex()).assignValues(colorScheme);
-    }
-
-    private void restoreColorSchemeFromHistory(int historyItemId) {
-        ArgbColorScheme selectedScheme = colorSchemeHistory.get(historyItemId);
-        colorScheme.assignValues(selectedScheme);
-    }
-
-    private void selectPaginItem(int itemId) {
-        colorSchemeHistoryPagin.setCurrentPageIndex(itemId);
-    }
-
-    private void selectLastPaginItem() {
-        int pageCount = colorSchemeHistoryPagin.getPageCount();
-        if (pageCount > 0) {
-            selectPaginItem(pageCount - 1);
-        } else if (pageCount == 0) {
-            selectPaginItem(0);
-        }
+    private void updatePagin(int currentId) {
+        colorSchemeHistoryPagin.setPageCount(history.size());
+        colorSchemeHistoryPagin.setCurrentPageIndex(currentId);
     }
 
     private void initPredefinedColorSchemeMenuButton() {
-        for (PredefinedColorSchemes value : PredefinedColorSchemes.values()) {
+        for (PredefinedColorSchemes predefinedScheme : PredefinedColorSchemes.values()) {
             MenuItem menuItem = new MenuItem();
-            menuItem.setText(StringCapitalizer.capitalizeFirstLetter(value.name().replaceAll("_", "-")));
+            menuItem.setText(predefinedScheme.name().replaceAll("_", "-"));
             menuItem.setOnAction(event -> {
-                changeCurrentColorScheme(value.get());
-                updateCurrentItemInHistory();
+                colorScheme.assignValues(predefinedScheme.get());
+                fillAndSubmitForm();
             });
             colorSchemeMenuButton.getItems().add(menuItem);
         }
