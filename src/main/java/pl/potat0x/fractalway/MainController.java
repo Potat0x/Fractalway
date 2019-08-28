@@ -108,8 +108,6 @@ public class MainController {
     @FXML
     private CheckMenuItem deviceInfoMenuItem;
     @FXML
-    private CheckMenuItem invertColorsMenuItem;
-    @FXML
     private CheckMenuItem timeInfoMenuItem;
 
     public MainController() {
@@ -134,7 +132,6 @@ public class MainController {
         initCursorMenu();
         initDeviceInfoMenuItem();
         initTimeInfoMenuItem();
-        initInvertColorsMenuItem();
         initResizeEventHandler();
         refreshCanvasSizeInfoLabel();
         initIterationsSliderAndLabel();
@@ -336,7 +333,6 @@ public class MainController {
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
             fractal = new Fractal(newType, Config.getInt("iterations-upper-limit"));
-            colorScheme.invertColors = invertColorsMenuItem.isSelected();
             releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
@@ -404,15 +400,11 @@ public class MainController {
     }
 
     private void initTimeInfoMenuItem() {
-        timeInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> timeInfoLabel.setVisible(newValue));
-        timeInfoMenuItem.selectedProperty().set(true);
-    }
-
-    private void initInvertColorsMenuItem() {
-        invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            colorScheme.invertColors = newValue;
-            drawFractal();
+        timeInfoMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            timeInfoLabel.setVisible(newValue);
+            canvasSizeInfoLabel.setVisible(newValue);
         });
+        timeInfoMenuItem.selectedProperty().set(true);
     }
 
     private void initResizeEventHandler() {

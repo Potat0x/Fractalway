@@ -25,8 +25,7 @@ public class ColorSchemeSettingsController extends BaseController {
     @FXML
     private ToggleButton invertColorsButton;
     @FXML
-    private SplitMenuButton colorSchemeMenuButton;
-
+    private MenuButton colorSchemeMenuButton;
     @FXML
     private Button deleteHistoryItemButton;
     @FXML

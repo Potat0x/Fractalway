@@ -4,10 +4,10 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -29,11 +29,7 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <SplitMenuButton fx:id="colorSchemeMenuButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Color scheme" HBox.hgrow="ALWAYS">
-                     <tooltip>
-                        <Tooltip text="Change current color scheme" />
-                     </tooltip>
-                  </SplitMenuButton>
+                  <MenuButton fx:id="colorSchemeMenuButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Color scheme" HBox.hgrow="ALWAYS" />
                   <Separator orientation="VERTICAL">
                      <HBox.margin>
                         <Insets left="3.0" />

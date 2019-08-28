@@ -46,7 +46,6 @@
                   <MenuItem mnemonicParsing="false" onAction="#showColorSchemeSettingsWindow" text="Color scheme" />
                   <MenuItem mnemonicParsing="false" onAction="#showFractalSettingsWindow" text="Fractal" />
                   <MenuItem mnemonicParsing="false" onAction="#showNavigationSettingsWindow" text="Navigation" />
-                  <CheckMenuItem fx:id="invertColorsMenuItem" mnemonicParsing="false" text="Invert colors" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Save">
