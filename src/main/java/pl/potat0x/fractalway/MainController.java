@@ -336,7 +336,7 @@ public class MainController {
         fractalGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             FractalType newType = (FractalType) newValue.getUserData();
             fractal = new Fractal(newType, Config.getInt("iterations-upper-limit"));
-            fractal.invertColors = invertColorsMenuItem.isSelected();
+            colorScheme.invertColors = invertColorsMenuItem.isSelected();
             releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal();
@@ -410,7 +410,7 @@ public class MainController {
 
     private void initInvertColorsMenuItem() {
         invertColorsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            fractal.invertColors = newValue;
+            colorScheme.invertColors = newValue;
             drawFractal();
         });
     }
@@ -592,7 +592,7 @@ public class MainController {
         g = cs.greenRightMultiplication ? g * cs.greenRightShift : g;
         b = cs.blueRightMultiplication ? b * cs.blueRightShift : b;
 
-        if (fractal.invertColors) {
+        if (colorScheme.invertColors) {
             r = 255 - r;
             g = 255 - g;
             b = 255 - b;

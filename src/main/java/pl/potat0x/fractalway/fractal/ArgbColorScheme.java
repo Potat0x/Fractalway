@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class ArgbColorScheme {
+    public boolean invertColors;
     public int redLeftShift, redRightShift;
     public int greenLeftShift, greenRightShift;
     public int blueLeftShift, blueRightShift;
@@ -63,6 +64,7 @@ public class ArgbColorScheme {
     }
 
     public void assignValues(ArgbColorScheme src) {
+        invertColors = src.invertColors;
         redLeftShift = src.redLeftShift;
         redRightShift = src.redRightShift;
         greenLeftShift = src.greenLeftShift;
@@ -82,7 +84,8 @@ public class ArgbColorScheme {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ArgbColorScheme that = (ArgbColorScheme) o;
-        return redLeftShift == that.redLeftShift &&
+        return invertColors == that.invertColors &&
+                redLeftShift == that.redLeftShift &&
                 redRightShift == that.redRightShift &&
                 greenLeftShift == that.greenLeftShift &&
                 greenRightShift == that.greenRightShift &&
@@ -98,13 +101,14 @@ public class ArgbColorScheme {
 
     @Override
     public int hashCode() {
-        return Objects.hash(redLeftShift, redRightShift, greenLeftShift, greenRightShift, blueLeftShift, blueRightShift, redLeftMultiplication, redRightMultiplication, greenLeftMultiplication, greenRightMultiplication, blueLeftMultiplication, blueRightMultiplication);
+        return Objects.hash(invertColors, redLeftShift, redRightShift, greenLeftShift, greenRightShift, blueLeftShift, blueRightShift, redLeftMultiplication, redRightMultiplication, greenLeftMultiplication, greenRightMultiplication, blueLeftMultiplication, blueRightMultiplication);
     }
 
     @Override
     public String toString() {
         return "ArgbColorScheme{" +
-                "redLeftShift=" + redLeftShift +
+                "invertColors=" + invertColors +
+                ", redLeftShift=" + redLeftShift +
                 ", redRightShift=" + redRightShift +
                 ", greenLeftShift=" + greenLeftShift +
                 ", greenRightShift=" + greenRightShift +

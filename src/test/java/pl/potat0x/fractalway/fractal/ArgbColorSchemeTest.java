@@ -8,6 +8,7 @@ public class ArgbColorSchemeTest {
     @Test
     public void copyingTest() {
         ArgbColorScheme cs = new ArgbColorScheme();
+        cs.invertColors = true;
         cs.redLeftShift = 0;
         cs.redRightShift = 1;
         cs.greenLeftShift = 2;

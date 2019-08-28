@@ -26,6 +26,8 @@ public class ColorSchemeSettingsController extends BaseController {
     private Slider blueLeft, blueRight;
 
     @FXML
+    private ToggleButton invertColorsButton;
+    @FXML
     private SplitMenuButton colorSchemeMenuButton;
 
     @FXML
@@ -66,6 +68,11 @@ public class ColorSchemeSettingsController extends BaseController {
             updateHistoryDeleteButton();
             onFormSubmitted.execute();
         });
+
+        invertColorsButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            colorScheme.invertColors = newValue;
+            onFormSubmitted.execute();
+        });
     }
 
     @Override
@@ -84,6 +91,8 @@ public class ColorSchemeSettingsController extends BaseController {
         setCheckBoxValue(greenRightMultiplication, colorScheme.greenRightMultiplication);
         setCheckBoxValue(blueLeftMultiplication, colorScheme.blueLeftMultiplication);
         setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
+
+        invertColorsButton.setSelected(colorScheme.invertColors);
         listenersUnlocked = true;
     }
 
@@ -96,8 +105,7 @@ public class ColorSchemeSettingsController extends BaseController {
         onFormSubmitted.execute();
     }
 
-    @FXML
-    private void changeCurrentColorScene(ArgbColorScheme newColorScheme) {
+    private void changeCurrentColorScheme(ArgbColorScheme newColorScheme) {
         colorScheme.assignValues(newColorScheme);
         updateCurrentItemInHistory();
         fillForm();
@@ -172,7 +180,7 @@ public class ColorSchemeSettingsController extends BaseController {
             MenuItem menuItem = new MenuItem();
             menuItem.setText(StringCapitalizer.capitalizeFirstLetter(value.name().replaceAll("_", "-")));
             menuItem.setOnAction(event -> {
-                changeCurrentColorScene(value.get());
+                changeCurrentColorScheme(value.get());
                 updateCurrentItemInHistory();
             });
             colorSchemeMenuButton.getItems().add(menuItem);

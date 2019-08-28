@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -38,7 +39,8 @@
                         <Insets left="3.0" />
                      </HBox.margin>
                   </Separator>
-                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" prefWidth="52.0" text="Delete">
+                  <ToggleButton fx:id="invertColorsButton" mnemonicParsing="false" text="Invert colors" />
+                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" text="Delete">
                      <tooltip>
                         <Tooltip text="Delete current color scheme from history" />
                      </tooltip></Button>

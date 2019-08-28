@@ -7,7 +7,6 @@ public class Fractal {
     private final int upperIterLimit;
 
     public final FractalType type;
-    public boolean invertColors;
     public int iterations = 160;
 
     public double posX = 0;
@@ -75,7 +74,6 @@ public class Fractal {
 
     public Fractal copy() {
         Fractal newFractal = new Fractal(type, upperIterLimit);
-        newFractal.invertColors = invertColors;
         newFractal.iterations = iterations;
         newFractal.posX = posX;
         newFractal.posY = posY;
@@ -93,7 +91,6 @@ public class Fractal {
         if (o == null || getClass() != o.getClass()) return false;
         Fractal fractal = (Fractal) o;
         return upperIterLimit == fractal.upperIterLimit &&
-                invertColors == fractal.invertColors &&
                 iterations == fractal.iterations &&
                 Double.compare(fractal.posX, posX) == 0 &&
                 Double.compare(fractal.posY, posY) == 0 &&
@@ -107,6 +104,6 @@ public class Fractal {
 
     @Override
     public int hashCode() {
-        return Objects.hash(upperIterLimit, type, invertColors, iterations, posX, posY, positionStep, zoom, zoomMultiplier, complexParamRe, complexParamIm);
+        return Objects.hash(upperIterLimit, type, iterations, posX, posY, positionStep, zoom, zoomMultiplier, complexParamRe, complexParamIm);
     }
 }
