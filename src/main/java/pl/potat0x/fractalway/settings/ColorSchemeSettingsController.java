@@ -2,6 +2,7 @@ package pl.potat0x.fractalway.settings;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 import pl.potat0x.fractalway.utils.Action;
 
@@ -54,20 +55,13 @@ public class ColorSchemeSettingsController extends BaseController {
 
     @FXML
     private void initialize() {
+        super.initialize(invertColorsButton);
         fillForm();
         initValueListeners();
         initPredefinedColorSchemeMenuButton();
-
-        colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
-            history.updateHistory(history.getIndexIfValidElseGetLastIndex(oldValue.intValue()));
-            history.restoreFromHistory(newValue.intValue());
-            fillAndSubmitForm();
-        });
-
-        invertColorsButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            colorScheme.invertColors = newValue;
-            fillAndSubmitForm();
-        });
+        initColorSchemeHistoryPagin();
+        initInvertColorsButton();
+        addEscKeyEventHandlerToColorSchemeMenu();
     }
 
     @FXML
@@ -134,6 +128,30 @@ public class ColorSchemeSettingsController extends BaseController {
             });
             colorSchemeMenuButton.getItems().add(menuItem);
         }
+    }
+
+    private void initInvertColorsButton() {
+        invertColorsButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            colorScheme.invertColors = newValue;
+            fillAndSubmitForm();
+        });
+    }
+
+    private void initColorSchemeHistoryPagin() {
+        colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
+            history.updateHistory(history.getIndexIfValidElseGetLastIndex(oldValue.intValue()));
+            history.restoreFromHistory(newValue.intValue());
+            fillAndSubmitForm();
+        });
+    }
+
+    private void addEscKeyEventHandlerToColorSchemeMenu() {
+        //when focused, MenuButton dont allow scene to receive key event
+        colorSchemeMenuButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                closeWindow();
+            }
+        });
     }
 
     @Override
