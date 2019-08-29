@@ -5,9 +5,11 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -29,17 +31,24 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="2.0">
                <children>
-                  <MenuButton fx:id="colorSchemeMenuButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Color scheme" HBox.hgrow="ALWAYS" />
+                  <MenuButton fx:id="colorSchemeMenuButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Color scheme" HBox.hgrow="ALWAYS">
+                     <tooltip>
+                        <Tooltip text="Change current color scheme" />
+                     </tooltip></MenuButton>
                   <Separator orientation="VERTICAL">
                      <HBox.margin>
                         <Insets left="3.0" />
                      </HBox.margin>
                   </Separator>
                   <ToggleButton fx:id="invertColorsButton" mnemonicParsing="false" text="Invert colors" />
-                  <Button fx:id="deleteHistoryItemButton" mnemonicParsing="false" onAction="#deleteCurrentColorScheme" text="Delete">
+                  <SplitMenuButton fx:id="deleteHistoryButton" mnemonicParsing="false" onAction="#deleteCurrentColorSchemeFromHistory" text="Delete">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#clearColorSchemeHistory" text="Delete all" />
+                    </items>
                      <tooltip>
                         <Tooltip text="Delete current color scheme from history" />
-                     </tooltip></Button>
+                     </tooltip>
+                  </SplitMenuButton>
                   <Pagination fx:id="colorSchemeHistoryPagin" maxPageIndicatorCount="3" pageCount="1" prefHeight="26.0" prefWidth="110.0" style="-fx-page-information-alignment: right; -fx-font-size: 12; -fx-page-information-visible: false;">
                      <padding>
                         <Insets bottom="1.0" />

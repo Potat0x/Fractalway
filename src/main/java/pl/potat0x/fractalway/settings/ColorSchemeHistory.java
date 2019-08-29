@@ -30,12 +30,16 @@ class ColorSchemeHistory {
         originalObject.assignValues(readFromHistory(id));
     }
 
-    int size() {
-        return history.size();
-    }
-
     void delete(int currentId) {
         history.remove(currentId);
+    }
+
+    void clear() {
+        history.clear();
+    }
+
+    int size() {
+        return history.size();
     }
 
     int getIndexIfValidElseGetLastIndex(int id) {

@@ -28,7 +28,7 @@ public class ColorSchemeSettingsController extends BaseController {
     @FXML
     private MenuButton colorSchemeMenuButton;
     @FXML
-    private Button deleteHistoryItemButton;
+    private SplitMenuButton deleteHistoryButton;
     @FXML
     private Pagination colorSchemeHistoryPagin;
     @FXML
@@ -74,12 +74,20 @@ public class ColorSchemeSettingsController extends BaseController {
     }
 
     @FXML
-    private void deleteCurrentColorScheme() {
+    private void deleteCurrentColorSchemeFromHistory() {
         int currentPageIndex = getPaginCurrentIndex();
         history.delete(currentPageIndex);
         history.restoreFromHistory(history.getIndexIfValidElseGetLastIndex(currentPageIndex));
         updatePagin(history.size() - 1);
         fillAndSubmitForm();
+    }
+
+    @FXML
+    private void clearColorSchemeHistory() {
+        history.clear();
+        history.addToHistory(colorScheme);
+        updatePagin(history.size() - 1);
+        fillForm();
     }
 
     @Override
@@ -100,7 +108,7 @@ public class ColorSchemeSettingsController extends BaseController {
         setCheckBoxValue(blueRightMultiplication, colorScheme.blueRightMultiplication);
 
         invertColorsButton.setSelected(colorScheme.invertColors);
-        deleteHistoryItemButton.setDisable(history.size() < 2);
+        deleteHistoryButton.setDisable(history.size() < 2);
         listenersUnlocked = true;
     }
 
