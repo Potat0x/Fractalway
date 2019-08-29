@@ -21,6 +21,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import pl.potat0x.fractalway.clock.Clock;
 import pl.potat0x.fractalway.colorscheme.ArgbColorScheme;
+import pl.potat0x.fractalway.colorscheme.ColorSchemeHistory;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.fractalpainter.CpuPainter;
@@ -79,6 +80,7 @@ public class MainController {
     private ToggleGroup deviceGroup;
     private String imageDialogLastDirectory;
     private final ArgbColorScheme colorScheme;
+    private final ColorSchemeHistory colorSchemeHistory;
     private final ParabolicScaleConverter sliderValueConverter;
 
     @FXML
@@ -119,6 +121,8 @@ public class MainController {
         patternPainter = new PatternPainter(canvasWidth, argb);
         cpuInfo = new CpuInfo();
         colorScheme = new ArgbColorScheme();
+        colorSchemeHistory = new ColorSchemeHistory(colorScheme);
+        colorSchemeHistory.addToHistory(colorScheme);
         sliderValueConverter = new ParabolicScaleConverter(Config.getInt("iterations-upper-limit"), Config.getDouble("main-iterations-slider-scale-exp"));
     }
 
@@ -216,7 +220,7 @@ public class MainController {
 
     @FXML
     private void showColorSchemeSettingsWindow(ActionEvent actionEvent) throws IOException {
-        openWindow("/fxml/color_settings.fxml", new ColorSchemeSettingsController(colorScheme, this::drawFractal), "Color scheme");
+        openWindow("/fxml/color_settings.fxml", new ColorSchemeSettingsController(colorScheme, colorSchemeHistory, this::drawFractal), "Color scheme");
     }
 
     @FXML

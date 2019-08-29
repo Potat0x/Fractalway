@@ -48,11 +48,10 @@ public class ColorSchemeSettingsController extends BaseController {
     */
     private boolean listenersUnlocked = true;
 
-    public ColorSchemeSettingsController(ArgbColorScheme colorScheme, Action onFormSubmitted) {
+    public ColorSchemeSettingsController(ArgbColorScheme colorScheme, ColorSchemeHistory history, Action onFormSubmitted) {
         super(onFormSubmitted);
         this.colorScheme = colorScheme;
-        history = new ColorSchemeHistory(colorScheme);
-        history.addToHistory(colorScheme);
+        this.history = history;
     }
 
     @FXML
@@ -80,8 +79,9 @@ public class ColorSchemeSettingsController extends BaseController {
     private void deleteCurrentColorSchemeFromHistory() {
         int currentPageIndex = getPaginCurrentIndex();
         history.delete(currentPageIndex);
-        history.restoreFromHistory(history.getIndexIfValidElseGetLastIndex(currentPageIndex));
-        updatePagin(history.size() - 1);
+        int newIndex = history.getIndexIfValidElseGetLastIndex(currentPageIndex);
+        history.restoreFromHistory(newIndex);
+        updatePagin(newIndex);
         fillAndSubmitForm();
     }
 
@@ -135,6 +135,7 @@ public class ColorSchemeSettingsController extends BaseController {
             menuItem.setText(predefinedScheme.name().replaceAll("_", "-"));
             menuItem.setOnAction(event -> {
                 colorScheme.assignValues(predefinedScheme.get());
+                updateCurrentItemInHistory();
                 fillAndSubmitForm();
             });
             colorSchemeMenuButton.getItems().add(menuItem);
@@ -144,13 +145,17 @@ public class ColorSchemeSettingsController extends BaseController {
     private void initInvertColorsButton() {
         invertColorsButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             colorScheme.invertColors = newValue;
+            updateCurrentItemInHistory();
             fillAndSubmitForm();
         });
     }
 
+    private void updateCurrentItemInHistory() {
+        history.updateHistory(history.getIndexIfValidElseGetLastIndex(getPaginCurrentIndex()));
+    }
+
     private void initColorSchemeHistoryPagin() {
         colorSchemeHistoryPagin.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
-            history.updateHistory(history.getIndexIfValidElseGetLastIndex(oldValue.intValue()));
             history.restoreFromHistory(newValue.intValue());
             fillAndSubmitForm();
         });
@@ -194,7 +199,7 @@ public class ColorSchemeSettingsController extends BaseController {
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (listenersUnlocked) {
                 consumer.accept(newValue);
-                onFormSubmitted.execute();
+                updateCurrentItemInHistoryAndSubmitForm();
             }
         });
     }
@@ -203,9 +208,14 @@ public class ColorSchemeSettingsController extends BaseController {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (listenersUnlocked) {
                 consumer.accept(newValue.intValue());
-                onFormSubmitted.execute();
+                updateCurrentItemInHistoryAndSubmitForm();
             }
         });
+    }
+
+    private void updateCurrentItemInHistoryAndSubmitForm() {
+        updateCurrentItemInHistory();
+        onFormSubmitted.execute();
     }
 
     private void setSliderValue(Slider slider, int value) {
