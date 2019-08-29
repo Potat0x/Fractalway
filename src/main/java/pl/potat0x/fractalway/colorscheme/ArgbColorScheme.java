@@ -1,4 +1,4 @@
-package pl.potat0x.fractalway.fractal;
+package pl.potat0x.fractalway.colorscheme;
 
 import java.util.Objects;
 import java.util.Random;

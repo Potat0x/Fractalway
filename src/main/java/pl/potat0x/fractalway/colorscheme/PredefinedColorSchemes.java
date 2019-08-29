@@ -1,8 +1,6 @@
-package pl.potat0x.fractalway.settings;
+package pl.potat0x.fractalway.colorscheme;
 
-import pl.potat0x.fractalway.fractal.ArgbColorScheme;
-
-enum PredefinedColorSchemes {
+public enum PredefinedColorSchemes {
     DEFAULT(new ArgbColorScheme()),
     MIX_1(12, 22, 8, 11, 2, 22, true, true, true, true, false, true),
     MIX_2(5, 18, 19, 23, 10, 17),

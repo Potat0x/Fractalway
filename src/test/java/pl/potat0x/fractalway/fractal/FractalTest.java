@@ -2,11 +2,12 @@ package pl.potat0x.fractalway.fractal;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 public class FractalTest {
     @Test
-    public void copyingTest() {
+    public void copyTest() {
         Fractal fr = new Fractal(FractalType.MANDELBROT_SET, 0);
         fr.iterations = 1;
         fr.posX = 2;

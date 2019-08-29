@@ -3,7 +3,9 @@ package pl.potat0x.fractalway.settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import pl.potat0x.fractalway.fractal.ArgbColorScheme;
+import pl.potat0x.fractalway.colorscheme.ArgbColorScheme;
+import pl.potat0x.fractalway.colorscheme.ColorSchemeHistory;
+import pl.potat0x.fractalway.colorscheme.PredefinedColorSchemes;
 import pl.potat0x.fractalway.utils.Action;
 
 import java.util.function.Consumer;
@@ -60,6 +62,7 @@ public class ColorSchemeSettingsController extends BaseController {
         initValueListeners();
         initPredefinedColorSchemeMenuButton();
         initColorSchemeHistoryPagin();
+        updatePagin(history.indexOf(colorScheme));
         initInvertColorsButton();
         addEscKeyEventHandlerToColorSchemeMenu();
     }

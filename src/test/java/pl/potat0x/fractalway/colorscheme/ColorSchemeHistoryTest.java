@@ -1,13 +1,11 @@
-package pl.potat0x.fractalway.settings;
+package pl.potat0x.fractalway.colorscheme;
 
 import org.junit.Test;
-import pl.potat0x.fractalway.fractal.ArgbColorScheme;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class ColorSchemeHistoryTest {
-
     @Test
     public void historyTest() {
         final ArgbColorScheme originalObject = new ArgbColorScheme();

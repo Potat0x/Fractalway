@@ -20,7 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import pl.potat0x.fractalway.clock.Clock;
-import pl.potat0x.fractalway.fractal.ArgbColorScheme;
+import pl.potat0x.fractalway.colorscheme.ArgbColorScheme;
 import pl.potat0x.fractalway.fractal.Fractal;
 import pl.potat0x.fractalway.fractal.FractalType;
 import pl.potat0x.fractalway.fractalpainter.CpuPainter;

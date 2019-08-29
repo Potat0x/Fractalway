@@ -1,15 +1,14 @@
-package pl.potat0x.fractalway.utils;
+package pl.potat0x.fractalway.utils.math;
 
 import io.vavr.Tuple2;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static pl.potat0x.fractalway.utils.math.IntervalDistributor.cutIntervalToSimilarSections;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class IntervalDistributorTest {
-
     @Test
     public void cutIntervalToSimilarSectionsTest() {
         final boolean verbose = false;
@@ -17,7 +16,7 @@ public class IntervalDistributorTest {
         for (int sectionsInInterval = 1; sectionsInInterval < 100; sectionsInInterval++) {
             for (int intervalWidth = 1; intervalWidth < 100; intervalWidth++) {
 
-                List<Tuple2<Integer, Integer>> sections = cutIntervalToSimilarSections(sectionsInInterval, intervalWidth);
+                List<Tuple2<Integer, Integer>> sections = IntervalDistributor.cutIntervalToSimilarSections(sectionsInInterval, intervalWidth);
 
                 if (verbose) {
                     System.out.println("intervalWidth = " + intervalWidth + " / " + "sectionsInInterval = " + sectionsInInterval);

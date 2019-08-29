@@ -1,48 +1,50 @@
-package pl.potat0x.fractalway.settings;
-
-import pl.potat0x.fractalway.fractal.ArgbColorScheme;
+package pl.potat0x.fractalway.colorscheme;
 
 import java.util.LinkedList;
 import java.util.List;
 
-class ColorSchemeHistory {
+public class ColorSchemeHistory {
     private final List<ArgbColorScheme> history;
     private final ArgbColorScheme originalObject;
 
-    ColorSchemeHistory(ArgbColorScheme originalObject) {
+    public ColorSchemeHistory(ArgbColorScheme originalObject) {
         history = new LinkedList<>();
         this.originalObject = originalObject;
     }
 
-    void addToHistory(ArgbColorScheme obj) {
+    public void addToHistory(ArgbColorScheme obj) {
         history.add(obj.copy());
     }
 
-    ArgbColorScheme readFromHistory(int id) {
+    public ArgbColorScheme readFromHistory(int id) {
         return history.get(id);
     }
 
-    void updateHistory(int id) {
+    public void updateHistory(int id) {
         history.get(id).assignValues(originalObject);
     }
 
-    void restoreFromHistory(int id) {
+    public void restoreFromHistory(int id) {
         originalObject.assignValues(readFromHistory(id));
     }
 
-    void delete(int currentId) {
+    public void delete(int currentId) {
         history.remove(currentId);
     }
 
-    void clear() {
+    public void clear() {
         history.clear();
     }
 
-    int size() {
+    public int size() {
         return history.size();
     }
 
-    int getIndexIfValidElseGetLastIndex(int id) {
+    public int indexOf(ArgbColorScheme obj) {
+        return history.indexOf(obj);
+    }
+
+    public int getIndexIfValidElseGetLastIndex(int id) {
         if (id < history.size()) {
             return id;
         } else {
