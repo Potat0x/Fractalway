@@ -13,6 +13,9 @@ Fractal generator.
 * Java 8
 * Nvidia GPU and CUDA Toolkit
 
+## Build and run
+`mvn install exec:java`
+
 ## Controls
 
 Action               | Key
