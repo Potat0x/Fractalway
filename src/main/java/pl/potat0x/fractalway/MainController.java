@@ -34,7 +34,6 @@ import pl.potat0x.fractalway.settings.NavigationSettingsController;
 import pl.potat0x.fractalway.utils.Action;
 import pl.potat0x.fractalway.utils.ArrayToImageWriter;
 import pl.potat0x.fractalway.utils.Config;
-import pl.potat0x.fractalway.utils.PatternPainter;
 import pl.potat0x.fractalway.utils.StringCapitalizer;
 import pl.potat0x.fractalway.utils.WindowBuilder;
 import pl.potat0x.fractalway.utils.device.CpuInfo;
@@ -71,7 +70,6 @@ public class MainController {
     private Fractal prevFractal;
     private ArgbColorScheme prevColorScheme;
 
-    private PatternPainter patternPainter;
     private Fractal fractal;
     private FractalPainter painter;
     private DecimalFormat decimalFormat;
@@ -118,7 +116,6 @@ public class MainController {
         initImageArray();
         initDecimalFormatter();
         fractal = new Fractal(FractalType.MANDELBROT_SET, Config.getInt("iterations-upper-limit"));
-        patternPainter = new PatternPainter(canvasWidth, argb);
         cpuInfo = new CpuInfo();
         colorScheme = new ArgbColorScheme();
         colorSchemeHistory = new ColorSchemeHistory(colorScheme);
@@ -130,7 +127,6 @@ public class MainController {
     private void initialize() {
         setBackgroundImage();
         initCanvas();
-        drawPattern();
         initDeviceMenu();
         initFractalMenu();
         initCursorMenu();
@@ -430,7 +426,6 @@ public class MainController {
             refreshCanvasSizeInfoLabel();
             initImageArray();
             initCanvas();
-            patternPainter = new PatternPainter(canvasWidth, argb);
             releaseFractalPainter();
             painter = createFractalPainter();
             drawFractal(true);
@@ -557,19 +552,6 @@ public class MainController {
         }
         PixelWriter pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
         pixelWriter.setPixels(0, 0, canvasWidth, canvasHeight, PixelFormat.getIntArgbPreInstance(), argb, 0, canvasWidth);
-    }
-
-    private void loadPattern() {
-        for (int y = 0; y < canvas.getHeight(); y++) {
-            for (int x = 0; x < canvas.getWidth(); x++) {
-                patternPainter.diagonalStripes(x, y);
-            }
-        }
-    }
-
-    private void drawPattern() {
-        loadPattern();
-        paintImageOnCanvas();
     }
 
     private int createColorArgb(int x, int y) {
